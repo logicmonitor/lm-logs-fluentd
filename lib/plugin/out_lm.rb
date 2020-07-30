@@ -67,9 +67,10 @@ module Fluent
         if record["_lm.resourceId"] == nil
           @resource_mapping.each do |key, value|
             k = value
-            v = record[key.to_s]
-            if v != nil
-              resource_map[k] = v
+            nestedVal = record
+            key.to_s.split('.').each { |x| nestedVal = nestedVal[x] }
+            if nestedVal != nil
+              resource_map[k] = nestedVal
             end
           end
           lm_event["_lm.resourceId"] = resource_map
@@ -91,7 +92,7 @@ module Fluent
       uri = URI.parse(url)
 
       log.info "Sending #{events.length} events to logic monitor at #{url}"
-
+      
       if @debug
         log.info "Request json #{body}"
       end
