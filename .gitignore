@@ -34,5 +34,4 @@ foo/
 *.iml
 .idea/
 
-fluent/
 Gemfile.lock
