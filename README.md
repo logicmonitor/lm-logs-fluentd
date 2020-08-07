@@ -10,13 +10,13 @@ This plugin sends Fluentd records to the Logic Monitor
 Minimal configuration:
 ```
 <match lm.**>
-@type lm
-company_name {company_name}
-resource_mapping {"event_key": "lm_property"}
-access_id {lm_access_id}
-access_key {lm_access_key}
-flush_interval 1s
-debug false
+    @type lm
+    company_name {company_name}
+    resource_mapping {"event_key": "lm_property"}
+    access_id {lm_access_id}
+    access_key {lm_access_key}
+    flush_interval 1s
+    debug false
 </match>
 ```
 
