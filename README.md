@@ -8,27 +8,26 @@ Add `out_lm.rb` to your Fluentd plugins directory.
 
 ## Configure the output plugin
 
-Create a custom `fluent.conf` or edit the existing one to specify which logs should be forwarded to LM.
+Create a custom `fluent.conf` or edit the existing one to specify which logs should be forwarded to LogicMonitor.
 
 ```
 # Match events tagged with "lm.**" and
 # send them to LogicMonitor
 <match lm.**>
-@type lm
-company_name <your_company_name>
-resource_mapping {"<event_key>": "<lm_property>"}
-access_id <your_lm_access_id>
-access_key <your_lm_access_key>
-
-flush_interval 1s
-debug false
+    @type lm
+    company_name <your_company_name>
+    resource_mapping {"<event_key>": "<lm_property>"}
+    access_id <your_lm_access_id>
+    access_key <your_lm_access_key>
+    flush_interval 1s
+    debug false
 </match>
 ```
 
 ### Request example
 
 Sending:
-`curl -X POST -d 'json={"message":"hello Logic Monitor from fluentd", "event_key":"lm_property_value"}' http://localhost:8888/lm.test`
+`curl -X POST -d 'json={"message":"hello LogicMonitor from fluentd", "event_key":"lm_property_value"}' http://localhost:8888/lm.test`
 
 Returns the event:
 ```
