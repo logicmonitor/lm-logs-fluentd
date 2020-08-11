@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.summary       = "Send logs to Logic Monitor"
   spec.description   = "Send logs to Logic Monitor"
   spec.homepage      = "https://github.com/logicmonitor/lm-logs-fluentd"
-  spec.license       = "Apache"
+  spec.license       = "Apache-2.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
