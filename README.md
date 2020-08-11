@@ -1,31 +1,55 @@
 
 # lm-logs-fluentd (beta)
-This plugin sends Fluentd records to the Logic Monitor
+This output plugin sends Fluentd records to the configured LogicMonitor account.
 
-## Getting started
-- Add `out_lm.rb` to plugins directory
+## Prerequisites
 
-- Add to `fluent.conf`
+Add `out_lm.rb` to your Fluentd plugins directory.
 
-Minimal configuration:
+## Configure the output plugin
+
+Create a custom `fluent.conf` or edit the existing one to specify which logs should be forwarded to LogicMonitor.
+
 ```
+# Match events tagged with "lm.**" and
+# send them to LogicMonitor
 <match lm.**>
     @type lm
-    company_name {company_name}
-    resource_mapping {"event_key": "lm_property"}
-    access_id {lm_access_id}
-    access_key {lm_access_key}
+    company_name <your_company_name>
+    resource_mapping {"<event_key>": "<lm_property>"}
+    access_id <your_lm_access_id>
+    access_key <your_lm_access_key>
     flush_interval 1s
     debug false
 </match>
 ```
 
-To send data by
+### Request example
 
-`curl -X POST -d 'json={"message":"hello Logic Monitor from fluentd", "event_key":"lm_property_value"}' http://localhost:8888/lm.test`
+Sending:
+`curl -X POST -d 'json={"message":"hello LogicMonitor from fluentd", "event_key":"lm_property_value"}' http://localhost:8888/lm.test`
 
-More examples of request
+Returns the event:
+```
+{
+    "message": "hello LogicMonitor from fluentd"
+}
+```
+
+**Note:** Make sure that logs have a message field. Requests sent without a message will not be accepted. 
+
+### Resource mapping examples
 
 - `{"message":"Hey!!", "event_key":"lm_property_value"}` with mapping `{"event_key": "lm_property"}`
-- `{"message":"Hey!!", "_lm.resourceId": { "lm_property_name" : "lm_property_value" } }`  this will override resource mapping.
 - `{"message":"Hey!!", "a":{"b":{"c":"lm_property_value"}} }` with mapping `{"a.b.c": "lm_property"}`
+- `{"message":"Hey!!", "_lm.resourceId": { "lm_property_name" : "lm_property_value" } }`  this will override resource mapping.
+
+## LogicMonitor properties
+
+| Property | Description |
+| --- | --- |
+| `company_name` | LogicMonitor account name. |
+| `resource_mapping` | The mapping that defines the source of the log event to the LM resource. |
+| `access_id` | LM API Token access ID. |
+| `access_key` | LM API Token access key. |
+
