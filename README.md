@@ -27,6 +27,7 @@ Create a custom `fluent.conf` or edit the existing one to specify which logs sho
 ### Request example
 
 Sending:
+
 `curl -X POST -d 'json={"message":"hello LogicMonitor from fluentd", "event_key":"lm_property_value"}' http://localhost:8888/lm.test`
 
 Returns the event:
@@ -49,7 +50,9 @@ Returns the event:
 | Property | Description |
 | --- | --- |
 | `company_name` | LogicMonitor account name. |
-| `resource_mapping` | The mapping that defines the source of the log event to the LM resource. |
+| `resource_mapping` | The mapping that defines the source of the log event to the LM resource. In this case, the `<event_key>` in the incoming event is mapped to the value of `<lm_property>`.|
 | `access_id` | LM API Token access ID. |
 | `access_key` | LM API Token access key. |
+| `flush_interval` | Defines the time in seconds to wait before sending batches of logs to LogicMonitor. Default is `60s`. |
+| `debug` | When `true`, logs more information to the fluentd console. |
 
