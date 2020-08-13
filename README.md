@@ -4,10 +4,8 @@ This output plugin sends Fluentd records to the configured LogicMonitor account.
 
 ## Prerequisites
 
-Install with gem:
-```
-gem install lm-logs-fluentd
-```
+Install with gem:       `gem install lm-logs-fluentd`
+For deb packages:       `td-agent-gem install lm-logs-fluentd`
 
 Alternative: Add `out_lm.rb` to your Fluentd plugins directory.
 
