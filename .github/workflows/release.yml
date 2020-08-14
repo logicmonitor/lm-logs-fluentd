@@ -21,7 +21,7 @@ jobs:
     - name: Add credentials
       env:
         GEM_ACCOUNT_PASSWORD: ${{ secrets.GEM_ACCOUNT_PASSWORD }}
-      run: curl -u ahsan13jan:$GEM_ACCOUNT_PASSWORD https://rubygems.org/api/v1/api_key.yaml > ~/.gem/credentials && chmod 0600 ~/.gem/credentials
+      run: curl -u LogicMonitor:$GEM_ACCOUNT_PASSWORD https://rubygems.org/api/v1/api_key.yaml > ~/.gem/credentials && chmod 0600 ~/.gem/credentials
     - name: Gem push
       run: gem push release.gem
       
