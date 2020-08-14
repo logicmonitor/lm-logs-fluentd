@@ -1,16 +1,21 @@
+# Unless explicitly stated otherwise all files in this repository are licensed
+# under the Apache License Version 2.0.
+# This product includes software developed at Logic Monitor (https://www.logicmonitor.com).
+# Copyright 2020 Logic Monitor, Inc.
+
 Gem::Specification.new do |spec|
-  spec.name          = "lm-logs-fluentd"
-  spec.version       = '0.0.5'
-  spec.authors       = ["LM"]
+  spec.name                         = "lm-logs-fluentd"
+  spec.version                      = '0.0.5'
+  spec.authors                      = ["Logic Monitor"]
+  spec.email                        = "rubygems@logicmonitor.com"
 
-  spec.summary       = "Send logs to Logic Monitor"
-  spec.description   = "Send logs to Logic Monitor"
-  spec.homepage      = "https://github.com/logicmonitor/lm-logs-fluentd"
-  spec.license       = "Apache-2.0"
+  spec.summary                      = "Logic Monitor logs fluentd plugin"
+  spec.description                  = "This output plugin sends Fluentd records to the configured LogicMonitor account."
+  spec.homepage                     = "https://www.logicmonitor.com"
+  spec.license                      = "Apache-2.0"
+  spec.documentation_uri            = "https://www.rubydoc.info/gems/lm-logs-fluentd"
+  spec.metadata["source_code_uri"]  = "https://github.com/logicmonitor/lm-logs-fluentd
 
-  spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = spec.homepage
-  spec.metadata["changelog_uri"] = spec.homepage
 
   spec.files         = [".gitignore", "Gemfile", "LICENSE", "README.md", "Rakefile", "lm-logs-fluentd.gemspec", "lib/fluent/plugin/out_lm.rb"]
   spec.require_paths = ["lib"]
