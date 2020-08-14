@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "lm-logs-fluentd"
-  spec.version       = '0.0.1'
+  spec.version       = '0.0.5'
   spec.authors       = ["LM"]
 
   spec.summary       = "Send logs to Logic Monitor"
