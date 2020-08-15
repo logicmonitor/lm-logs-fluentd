@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors                      = ["Logic Monitor"]
   spec.email                        = "rubygems@logicmonitor.com"
 
-  spec.summary                      = "Logic Monitor logs fluentd plugin"
-  spec.description                  = "This output plugin sends Fluentd records to the configured LogicMonitor account."
+  spec.summary                      = "Logic Monitor logs fluentd output plugin"
+  spec.description                  = "This output plugin sends fluentd records to the configured LogicMonitor account."
   spec.homepage                     = "https://www.logicmonitor.com"
   spec.license                      = "Apache-2.0"
   spec.documentation_uri            = "https://www.rubydoc.info/gems/lm-logs-fluentd"
