@@ -20,6 +20,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.required_ruby_version = '>= 2.0.0'
 
-  spec.add_runtime_dependency "fluentd", "~> 0.12"
+  spec.add_runtime_dependency "fluentd", [">= 1", "< 2"]
   spec.add_runtime_dependency "http", "< 3"
 end
