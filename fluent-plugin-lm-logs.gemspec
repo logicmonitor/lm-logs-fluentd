@@ -4,7 +4,7 @@
 # Copyright 2020 Logic Monitor, Inc.
 
 Gem::Specification.new do |spec|
-  spec.name                           = "lm-logs-fluentd"
+  spec.name                           = "fluent-plugin-lm-logs"
   spec.version                        = '0.0.6'
   spec.authors                        = ["Logic Monitor"]
   spec.email                          = "rubygems@logicmonitor.com"
@@ -16,10 +16,9 @@ Gem::Specification.new do |spec|
   spec.metadata["source_code_uri"]    = "https://github.com/logicmonitor/lm-logs-fluentd"
   spec.metadata["documentation_uri"]  = "https://www.rubydoc.info/gems/lm-logs-fluentd"
 
-  spec.files         = [".gitignore", "Gemfile", "LICENSE", "README.md", "Rakefile", "lm-logs-fluentd.gemspec", "lib/fluent/plugin/out_lm.rb"]
+  spec.files         = [".gitignore", "Gemfile", "LICENSE", "README.md", "Rakefile", "fluent-plugin-lm-logs.gemspec", "lib/fluent/plugin/out_lm.rb"]
   spec.require_paths = ["lib"]
   spec.required_ruby_version = '>= 2.0.0'
 
   spec.add_runtime_dependency "fluentd", [">= 1", "< 2"]
-  spec.add_runtime_dependency "http", "< 3"
 end

@@ -61,10 +61,17 @@ module Fluent
     def write(chunk)
       events = []
       chunk.msgpack_each do |(tag, time, record)|
-        resource_map = {}
-        lm_event = record
+        event = process_record(tag,time,record)
+        events.push(event)
+      end
+      send_batch(events)
+    end
 
-        if record["_lm.resourceId"] == nil
+    def process_record(tag, time, record)
+      resource_map = {}
+      lm_event = {}
+      lm_event["message"] = record["message"]
+      if record["_lm.resourceId"] == nil
           @resource_mapping.each do |key, value|
             k = value
             nestedVal = record
@@ -73,17 +80,13 @@ module Fluent
               resource_map[k] = nestedVal
             end
           end
-          lm_event["_lm.resourceId"] = resource_map
-        end
-
-        lm_event["timestamp"] = Time.at(time).utc.to_datetime.rfc3339
-
-        if @debug
-          log.info "Event #{lm_event.to_json}"
-        end
-        events.push(lm_event)
+        lm_event["_lm.resourceId"] = resource_map
+      else
+        lm_event["_lm.resourceId"] = record["_lm.resourceId"]
       end
-      send_batch(events)
+  
+      lm_event["timestamp"] = Time.at(time).utc.to_datetime.rfc3339
+      return lm_event
     end
 
     def send_batch(events)

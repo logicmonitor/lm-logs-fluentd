@@ -14,4 +14,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: docker build -t lm-logs-fluentd .
+      run: docker build -t fluent-plugin-lm-logs .
