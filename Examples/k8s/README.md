@@ -1,6 +1,6 @@
 ## Send k8s logs to Logic Monitor
 
-#### Prerequisute
+#### Prerequisite
 - Logic Monitor collector [installed](https://www.logicmonitor.com/support/monitoring/containers/kubernetes/adding-your-kubernetes-cluster-into-monitoring). 
 
 
