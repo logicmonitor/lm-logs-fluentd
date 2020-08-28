@@ -23,7 +23,11 @@ Create a custom `fluent.conf` or edit the existing one to specify which logs sho
     resource_mapping {"<event_key>": "<lm_property>"}
     access_id <your_lm_access_id>
     access_key <your_lm_access_key>
-    flush_interval 1s
+      <buffer>
+        @type memory
+        flush_interval 1s
+        chunk_limit_size 5m
+      </buffer> 
     debug false
 </match>
 ```
