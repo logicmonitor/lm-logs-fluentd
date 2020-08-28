@@ -1,4 +1,5 @@
 
+[![Gem Version](https://badge.fury.io/rb/fluent-plugin-lm-logs.svg)](http://badge.fury.io/rb/fluent-plugin-lm-logs)
 # lm-logs-fluentd (beta)
 This output plugin sends Fluentd records to the configured LogicMonitor account.
 
@@ -47,6 +48,11 @@ Returns the event:
 
 **Note:** Make sure that logs have a message field. Requests sent without a message will not be accepted. 
 
+### Kubernetes
+Logic Monitor collects k8s logs automatically via FluentD daemonset, It requires a plugin for this. We recommend using [fluent-plugin-kubernetes_metadata_filter](https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter) to collect  Kubernetes metadata.
+
+See the [example](https://github.com/logicmonitor/lm-logs-fluentd/tree/master/Examples/k8s) to forward k8s logs to Logic Monitor.
+
 ### Resource mapping examples
 
 - `{"message":"Hey!!", "event_key":"lm_property_value"}` with mapping `{"event_key": "lm_property"}`
@@ -63,4 +69,3 @@ Returns the event:
 | `access_key` | LM API Token access key. |
 | `flush_interval` | Defines the time in seconds to wait before sending batches of logs to LogicMonitor. Default is `60s`. |
 | `debug` | When `true`, logs more information to the fluentd console. |
-
