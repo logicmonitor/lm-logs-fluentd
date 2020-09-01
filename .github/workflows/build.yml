@@ -14,4 +14,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build and Test
-      run: rake build && rake test
+      run: rake build --trace && rake test --trace
