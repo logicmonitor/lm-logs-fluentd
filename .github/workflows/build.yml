@@ -15,6 +15,6 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-ruby@v1
       with:
-        ruby-version: 2.6.3
+        ruby-version: 2.6
     - name: Build and Test
       run: rake build && cd test/plugin && ruby test_out_lm.rb
