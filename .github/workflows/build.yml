@@ -14,4 +14,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build and Test
-      run: rake build && cd test/plugin && ruby test_out_lm.rbs
+      run: rake build && cd test/plugin && ruby test_out_lm.rb
