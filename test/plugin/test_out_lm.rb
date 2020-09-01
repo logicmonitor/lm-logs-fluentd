@@ -1,7 +1,7 @@
 require "fluent/test"
 require "fluent/test/helpers"
 require "fluent/test/driver/output"
-require "../../lib/fluent/plugin/out_lm"
+require "fluent/plugin/out_lm"
 
 class FluentLMTest < Test::Unit::TestCase
   include Fluent::Test::Helpers
