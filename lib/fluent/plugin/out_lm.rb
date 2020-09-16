@@ -109,12 +109,9 @@ module Fluent
       request.body = body
 
       resp = http.request(request)
-      if @debug
-        log.info "Response #{resp.body}"
-      end
-
-      if !resp.kind_of? Net::HTTPSuccess
-        log.error "Error sending batch #{resp.body}"
+      if @debug || (!resp.kind_of? Net::HTTPSuccess)
+        log.info "Status code #{resp.code}"
+        log.info "Request Id #{resp.header['x-request-id']}"
       end
     end
 
