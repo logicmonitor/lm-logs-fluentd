@@ -7,33 +7,13 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-serviceAccount:
-  create: true
-  annotations: {}
-  name: ""
-
-podAnnotations: {}
-
-podSecurityContext: {}
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-resources: {}
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-nodeSelector: {}
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
 
 tolerations:
-  - operator: Exists
+  - key: "node-role.kubernetes.io/master"
+    operator: "Exists"
+    effect: "NoSchedule"
 
-affinity: {}
