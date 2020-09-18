@@ -1,14 +1,9 @@
-{{- if .Values.serviceAccount.create -}}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ include "fluentd.serviceAccountName" . }}
   labels:
     {{- include "fluentd.labels" . | nindent 4 }}
-  {{- with .Values.serviceAccount.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -39,4 +34,3 @@ subjects:
 - kind: ServiceAccount
   name: {{ include "fluentd.serviceAccountName" . }}
   namespace: {{ .Release.Namespace }}
-{{- end }}
