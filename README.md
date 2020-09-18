@@ -39,7 +39,7 @@ Sending:
 
 `curl -X POST -d 'json={"message":"hello LogicMonitor from fluentd", "event_key":"lm_property_value"}' http://localhost:8888/lm.test`
 
-Returns the event:
+Produces this event:
 ```
 {
     "message": "hello LogicMonitor from fluentd"
