@@ -6,4 +6,4 @@
 
 #### Deploy
 Run the following command to deploy
-`helm install -n <namespace> lm-logs-k8s-fluent --set lm_company_name=<lm_company_name> --set "lm_access_id=<access_id>" --set "lm_access_key=<access_key>" .`
+`helm install -n <namespace> lm-logs-k8s-fluent --set "lm_company_name=<lm_company_name>" --set "lm_access_id=<access_id>" --set "lm_access_key=<access_key>" .`
