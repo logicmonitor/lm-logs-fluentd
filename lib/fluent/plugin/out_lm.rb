@@ -93,10 +93,9 @@ module Fluent
       url = "https://#{@company_name}.logicmonitor.com/rest/log/ingest"
       body = events.to_json
       uri = URI.parse(url)
-
-      log.info "Sending #{events.length} events to logic monitor at #{url}"
       
       if @debug
+        log.info "Sending #{events.length} events to logic monitor at #{url}"
         log.info "Request json #{body}"
       end
 
@@ -110,8 +109,7 @@ module Fluent
 
       resp = http.request(request)
       if @debug || (!resp.kind_of? Net::HTTPSuccess)
-        log.info "Status code #{resp.code}"
-        log.info "Request Id #{resp.header['x-request-id']}"
+        log.info "Status code:#{resp.code} Request Id:#{resp.header['x-request-id']}"
       end
     end
 
