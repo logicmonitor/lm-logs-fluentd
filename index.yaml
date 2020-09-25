@@ -1,0 +1,12 @@
+apiVersion: v1
+entries:
+  lm-k8s-fluent:
+  - apiVersion: v2
+    created: "2020-09-25T12:33:49.763705+02:00"
+    description: A Helm chart for sending k8s logs to Logic Monitor
+    digest: 42e0e7b841e3e8d10ff6d3f1b792f9892d80465ee7f62379893e2d0502d66c11
+    name: lm-k8s-fluent
+    urls:
+    - https://logicmonitor.github.io/lm-logs-fluentd/lm-k8s-fluent-0.1.1.tgz
+    version: 0.1.1
+generated: "2020-09-25T12:33:49.756279+02:00"
