@@ -49,7 +49,7 @@ Produces this event:
 **Note:** Make sure that logs have a message field. Requests sent without a message will not be accepted. 
 
 ### Kubernetes
-Logic Monitor collects k8s logs automatically via FluentD daemonset, It requires a plugin for this. We recommend using [fluent-plugin-kubernetes_metadata_filter](https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter) to collect  Kubernetes metadata.
+Logic Monitor collects k8s logs automatically via FluentD daemonset, it requires a plugin for this. We recommend using [fluent-plugin-kubernetes_metadata_filter](https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter) to collect  Kubernetes metadata.
 
 See the [example](https://github.com/logicmonitor/lm-logs-fluentd/tree/master/Examples/k8s) to forward k8s logs to Logic Monitor.
 
