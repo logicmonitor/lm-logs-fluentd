@@ -5,7 +5,7 @@ require 'uri'
 require 'digest'
 require 'json'
 require 'openssl'
-require "base64"
+require 'base64'
 require 'net/http'
 require 'net/https'
 
