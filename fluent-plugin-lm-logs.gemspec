@@ -1,14 +1,14 @@
 # Unless explicitly stated otherwise all files in this repository are licensed
 # under the Apache License Version 2.0.
-# This product includes software developed at Logic Monitor (https://www.logicmonitor.com).
-# Copyright 2020 Logic Monitor, Inc.
+# This product includes software developed at LogicMonitor (https://www.logicmonitor.com).
+# Copyright 2020 LogicMonitor, Inc.
 
 Gem::Specification.new do |spec|
   spec.name                           = "fluent-plugin-lm-logs"
   spec.version                        = '0.0.9'
-  spec.authors                        = ["Logic Monitor"]
+  spec.authors                        = ["LogicMonitor"]
   spec.email                          = "rubygems@logicmonitor.com"
-  spec.summary                        = "Logic Monitor logs fluentd output plugin"
+  spec.summary                        = "LogicMonitor logs fluentd output plugin"
   spec.description                    = "This output plugin sends fluentd records to the configured LogicMonitor account."
   spec.homepage                       = "https://www.logicmonitor.com"
   spec.license                        = "Apache-2.0"
