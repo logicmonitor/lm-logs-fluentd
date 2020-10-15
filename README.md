@@ -20,10 +20,10 @@ Create a custom `fluent.conf` or edit the existing one to specify which logs sho
 # send them to LogicMonitor
 <match lm.**>
     @type lm
-    company_name <account_name>
     resource_mapping {"<event_key>": "<lm_property>"}
-    access_id <your_lm_access_id>
-    access_key <your_lm_access_key>
+    company_name <lm_company_name>
+	access_id <lm_access_id>
+    access_key <lm_access_key>
       <buffer>
         @type memory
         flush_interval 1s
@@ -49,9 +49,8 @@ Produces this event:
 **Note:** Make sure that logs have a message field. Requests sent without a message will not be accepted. 
 
 ### Kubernetes
-Logic Monitor collects k8s logs automatically via FluentD daemonset, It requires a plugin for this. We recommend using [fluent-plugin-kubernetes_metadata_filter](https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter) to collect  Kubernetes metadata.
-
-See the [example](https://github.com/logicmonitor/lm-logs-fluentd/tree/master/Examples/k8s) to forward k8s logs to Logic Monitor.
+The Kubernetes configuration for LM Logs is deployed as a Helm chart.
+See the [LogicMonitor Helm repository](https://github.com/logicmonitor/k8s-helm-charts/tree/master/lm-logs).
 
 ### Resource mapping examples
 
