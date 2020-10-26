@@ -68,4 +68,4 @@ See the [LogicMonitor Helm repository](https://github.com/logicmonitor/k8s-helm-
 | `access_key` | LM API Token access key. |
 | `flush_interval` | Defines the time in seconds to wait before sending batches of logs to LogicMonitor. Default is `60s`. |
 | `debug` | When `true`, logs more information to the fluentd console. |
-| `enforce_encoding` | When `true`, will force invalid utf-8 characters to convert to valid utf-8 string. Default is `false`.|
+| `force_encoding` | When `true`, will force invalid utf-8 characters to convert to valid utf-8 string. Default is `false`.|
