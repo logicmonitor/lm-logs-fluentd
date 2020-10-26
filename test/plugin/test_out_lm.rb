@@ -27,17 +27,17 @@ class FluentLMTest < Test::Unit::TestCase
       ]).instance
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
-      record = {"message" => "Hello from test", "_lm.resourceId" => { "lm_property": "lm_property_value"  } , "a": "b"}
+      record = {"message" => "Hello from test", "_lm.resourceId" => { "lm_property": "lm_property_value"   }}
     
       result = plugin.process_record(tag, time, record)
-			
+    
       expected = {
           "message" => "Hello from test",
           "_lm.resourceId" => record["_lm.resourceId"],
           "timestamp" => "2020-08-23T00:53:15+00:00"
       }
 
-      assert_equal result.to_json ,expected.to_json
+      assert_equal expected, result
     end
 
     test "resource_mapping passed, should extract value from record" do
@@ -59,22 +59,22 @@ class FluentLMTest < Test::Unit::TestCase
         }
   
         assert_equal expected, result
-	  end
+      end
   end
 
-  sub_test_case "force_encoding" do
-
-    test "invalid utf-8 character passed, it should convert" do
-      plugin = create_driver(%[
+  sub_test_case "resource_mapping" do
+      test "resource_mapping passed, should extract value from record" do
+        plugin = create_driver(%[
           resource_mapping {"a.b": "lm_property"} 
           force_encoding true
       ]).instance
+
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
-      record = {"message" => "LogicMonitor\xAE", "a" => { "b" => "lm_property_value" } }
+      event = {"message" => "LogicMonitor\xAE", "a" => { "b" => "lm_property_value" } }
     
-      event = plugin.process_record(tag, time, record)
-  
+      event = plugin.process_record(tag, time, event)
+      
       assert_equal "LogicMonitor®", event["message"]
     end
   end
