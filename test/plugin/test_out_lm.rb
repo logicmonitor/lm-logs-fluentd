@@ -27,7 +27,7 @@ class FluentLMTest < Test::Unit::TestCase
       ]).instance
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
-      record = {"message" => "Hello from test", "_lm.resourceId" => { "lm_property": "lm_property_value"   }}
+      record = {"message" => "Hello from test", "_lm.resourceId" => { "lm_property": "lm_property_value"  } , "a": "b"}
     
       result = plugin.process_record(tag, time, record)
     
@@ -74,7 +74,7 @@ class FluentLMTest < Test::Unit::TestCase
       event = {"message" => "LogicMonitor\xAE", "a" => { "b" => "lm_property_value" } }
     
       event = plugin.process_record(tag, time, event)
-      
+
       assert_equal "LogicMonitor®", event["message"]
     end
   end
