@@ -27,7 +27,7 @@ class FluentLMTest < Test::Unit::TestCase
       ]).instance
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
-      record = {"message" => "Hello from test", "_lm.resourceId" => { "lm_property": "lm_property_value"  } , "a": "b"}
+      record = {"message" => "Hello from test", "_lm.resourceId" => { "lm_property": "lm_property_value"   }}
     
       result = plugin.process_record(tag, time, record)
     
