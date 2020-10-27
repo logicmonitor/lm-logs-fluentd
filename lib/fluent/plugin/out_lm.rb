@@ -25,6 +25,8 @@ module Fluent
     config_param :resource_mapping,  :hash, :default => {"host": "system.hostname", "hostname": "system.hostname"}
 
     config_param :debug,  :bool, :default => false
+		
+    config_param :force_encoding,  :string, :default => ""
 
     # This method is called before starting.
     # 'conf' is a Hash that includes configuration parameters.
@@ -71,6 +73,11 @@ module Fluent
       resource_map = {}
       lm_event = {}
       lm_event["message"] = record["message"]
+      
+      if @force_encoding != ""
+        lm_event["message"] = lm_event["message"].force_encoding(@force_encoding).encode("UTF-8")
+      end
+
       if record["_lm.resourceId"] == nil
           @resource_mapping.each do |key, value|
             k = value
