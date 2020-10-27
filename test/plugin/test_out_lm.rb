@@ -62,8 +62,8 @@ class FluentLMTest < Test::Unit::TestCase
       end
   end
 
-  sub_test_case "resource_mapping" do
-      test "resource_mapping passed, should extract value from record" do
+  sub_test_case "force_encoding" do
+      test "force_encoding passed as true, should convert invalid utf-8 characters" do
         plugin = create_driver(%[
           resource_mapping {"a.b": "lm_property"} 
           force_encoding true
