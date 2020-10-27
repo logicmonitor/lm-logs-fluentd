@@ -66,7 +66,7 @@ class FluentLMTest < Test::Unit::TestCase
       test "force_encoding passed as true, should convert invalid utf-8 characters" do
         plugin = create_driver(%[
           resource_mapping {"a.b": "lm_property"} 
-          force_encoding true
+          force_encoding ISO-8859-1
       ]).instance
 
       tag = "lm.test"

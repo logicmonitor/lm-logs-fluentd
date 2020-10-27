@@ -26,7 +26,7 @@ module Fluent
 
     config_param :debug,  :bool, :default => false
 		
-    config_param :force_encoding,  :bool, :default => false
+    config_param :force_encoding,  :string, :default => ""
 
     # This method is called before starting.
     # 'conf' is a Hash that includes configuration parameters.
@@ -74,8 +74,8 @@ module Fluent
       lm_event = {}
       lm_event["message"] = record["message"]
       
-      if @force_encoding 
-        lm_event["message"] = lm_event["message"].force_encoding("ISO-8859-1").encode("UTF-8")
+      if @force_encoding != ""
+        lm_event["message"] = lm_event["message"].force_encoding(@force_encoding).encode("UTF-8")
       end
 
       if record["_lm.resourceId"] == nil
