@@ -80,7 +80,7 @@ class FluentLMTest < Test::Unit::TestCase
   end
 
   sub_test_case "time" do
-    test "timestamp passed in the record should use that" do
+    test "timestamp passed in the record, it should use that" do
       plugin = create_driver(%[
         resource_mapping {"a.b": "lm_property"} 
     ]).instance
