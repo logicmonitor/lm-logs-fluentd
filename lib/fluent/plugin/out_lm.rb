@@ -91,8 +91,13 @@ module Fluent
       else
         lm_event["_lm.resourceId"] = record["_lm.resourceId"]
       end
-  
-      lm_event["timestamp"] = Time.at(time).utc.to_datetime.rfc3339
+
+      if record["timestamp"] != nil
+        lm_event["timestamp"] = record["timestamp"]
+      else
+        lm_event["timestamp"] = Time.at(time).utc.to_datetime.rfc3339
+      end
+
       return lm_event
     end
 

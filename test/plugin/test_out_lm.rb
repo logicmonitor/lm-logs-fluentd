@@ -78,4 +78,29 @@ class FluentLMTest < Test::Unit::TestCase
       assert_equal "LogicMonitor®", event["message"]
     end
   end
+
+  sub_test_case "time" do
+    test "timestamp passed in the record should use that" do
+      plugin = create_driver(%[
+        resource_mapping {"a.b": "lm_property"} 
+    ]).instance
+
+    tag = "lm.test"
+    time = Time.parse("2020-08-23T00:53:15+00:00").to_i
+    record = {"message" => "Hello from test",  "timestamp2" => "2020-10-30T00:29:08.629701504Z" ,"a" => { "b" => "lm_property_value" } }
+  
+    result = plugin.process_record(tag, time, record)
+      
+    expected = {
+        "message" => "Hello from test",
+        "_lm.resourceId" => {
+            "lm_property" => "lm_property_value"
+        },
+        "timestamp" => "2020-10-30T00:29:08.629701504Z"
+    }
+
+    assert_equal expected, result
+  end
+end
+
 end
