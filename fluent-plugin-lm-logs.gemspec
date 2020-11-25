@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |spec|
   spec.name                           = "fluent-plugin-lm-logs"
-  spec.version                        = '0.0.11'
+  spec.version                        = '0.0.12'
   spec.authors                        = ["LogicMonitor"]
   spec.email                          = "rubygems@logicmonitor.com"
   spec.summary                        = "LogicMonitor logs fluentd output plugin"
