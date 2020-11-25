@@ -126,7 +126,6 @@ module Fluent
         gzip = Zlib::GzipWriter.new(StringIO.new)
         gzip << body
         request.body = gzip.close.string
-        log.info "Gzipped json #{request.body}"
       else
         request.body = body
       end
