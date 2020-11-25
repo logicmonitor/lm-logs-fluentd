@@ -8,6 +8,7 @@ require 'openssl'
 require 'base64'
 require 'net/http'
 require 'net/https'
+require('zlib')
 
 
 module Fluent
@@ -27,6 +28,8 @@ module Fluent
     config_param :debug,  :bool, :default => false
 		
     config_param :force_encoding,  :string, :default => ""
+
+    config_param :compression,  :string, :default => ""
 
     # This method is called before starting.
     # 'conf' is a Hash that includes configuration parameters.
@@ -116,8 +119,17 @@ module Fluent
 
       request = Net::HTTP::Post.new(uri.request_uri)
       request['authorization'] = generate_token(events)
-      request['Content-type'] = "application/json"  
-      request.body = body
+      request['Content-type'] = "application/json"
+
+      if @compression == "gzip"
+        request['Content-Encoding'] = "gzip"
+        gzip = Zlib::GzipWriter.new(StringIO.new)
+        gzip << body
+        request.body = gzip.close.string
+        log.info "Gzipped json #{request.body}"
+      else
+        request.body = body
+      end
 
       resp = http.request(request)
       if @debug || (!resp.kind_of? Net::HTTPSuccess)
