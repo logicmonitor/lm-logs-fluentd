@@ -1,6 +1,6 @@
 
 [![Gem Version](https://badge.fury.io/rb/fluent-plugin-lm-logs.svg)](http://badge.fury.io/rb/fluent-plugin-lm-logs)
-# lm-logs-fluentd (beta)
+# lm-logs-fluentd
 This output plugin sends Fluentd records to the configured LogicMonitor account.
 
 ## Prerequisites
