@@ -31,6 +31,7 @@ module Fluent
 
     config_param :compression,  :string, :default => ""
 
+    $versionId = "0.0.1"
     # This method is called before starting.
     # 'conf' is a Hash that includes configuration parameters.
     # If the configuration is invalid, raise Fluent::ConfigError.
@@ -120,6 +121,7 @@ module Fluent
       request = Net::HTTP::Post.new(uri.request_uri)
       request['authorization'] = generate_token(events)
       request['Content-type'] = "application/json"
+      request['User-Agent'] = "lm-logs-fluentd/"+versionId
 
       if @compression == "gzip"
         request['Content-Encoding'] = "gzip"
