@@ -31,7 +31,7 @@ module Fluent
 
     config_param :compression,  :string, :default => ""
 
-    config_param :log_source,  :string, :default => "fluentd"
+    config_param :log_source,  :string, :default => "lm-logs-fluentd"
 
     config_param :version_id,  :string, :default => "version_id"
     
