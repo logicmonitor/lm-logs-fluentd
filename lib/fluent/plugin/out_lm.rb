@@ -124,7 +124,7 @@ module Fluent
       request = Net::HTTP::Post.new(uri.request_uri)
       request['authorization'] = generate_token(events)
       request['Content-type'] = "application/json"
-      request['User-Agent'] = log_source+version_id
+      request['User-Agent'] = log_source + "/" + version_id
 
       if @compression == "gzip"
         request['Content-Encoding'] = "gzip"
@@ -133,6 +133,10 @@ module Fluent
         request.body = gzip.close.string
       else
         request.body = body
+      end
+
+      if @debug
+        request.each_header {|key,value| log.info "#{key} = #{value}" }
       end
 
       resp = http.request(request)
