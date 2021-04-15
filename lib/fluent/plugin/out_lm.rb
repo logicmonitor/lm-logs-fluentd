@@ -136,6 +136,7 @@ module Fluent
       end
 
       if @debug
+        log.info "Sending the below request headers to logicmonitor:"
         request.each_header {|key,value| log.info "#{key} = #{value}" }
       end
 
