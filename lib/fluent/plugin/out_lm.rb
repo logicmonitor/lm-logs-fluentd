@@ -9,7 +9,7 @@ require 'base64'
 require 'net/http'
 require 'net/https'
 require('zlib')
-
+require 'resolv-replace'
 
 module Fluent
   class LmOutput < BufferedOutput
