@@ -79,11 +79,6 @@ module Fluent
     def process_record(tag, time, record)
       resource_map = {}
       lm_event = {}
-      lm_event["message"] = record["message"]
-      
-      if @force_encoding != ""
-        lm_event["message"] = lm_event["message"].force_encoding(@force_encoding).encode("UTF-8")
-      end
 
       if record["_lm.resourceId"] == nil
           @resource_mapping.each do |key, value|
@@ -103,6 +98,17 @@ module Fluent
         lm_event["timestamp"] = record["timestamp"]
       else
         lm_event["timestamp"] = Time.at(time).utc.to_datetime.rfc3339
+      end
+
+      #Add any additonal record keys as additional metadata
+      record.each do |key, value|
+        if key != "timestamp" || key != "_lm.resourceId"
+            lm_event["#{key}"] = value
+
+            if @force_encoding != ""
+                lm_event["#{key}"] = lm_event["#{key}"].force_encoding(@force_encoding).encode("UTF-8")
+            end
+        end
       end
 
       return lm_event
