@@ -111,9 +111,7 @@ module Fluent
         record.each do |key, value|
           case key
           when *@metadata_to_exclude.concat(["timestamp","_lm.resourceId","log","message"])
-            log.debug "excluding metadata : #{key}"
           else    
-            log.debug "attaching metadata : #{key}"
               lm_event["#{key}"] = value
   
               if @force_encoding != ""
