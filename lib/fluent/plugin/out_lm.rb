@@ -128,6 +128,15 @@ module Fluent
         lm_event["message"] = lm_event["message"].force_encoding(@force_encoding).encode("UTF-8")
       end
 
+      if @device_less_logs
+        if record["service"]==nil || record["namespace"] == nil
+          log.error "When device_less_logs is set \'true\', record must have \'service\' and \'namespace\'. Ignoring this event #{lm_event}."
+          return nil
+        else
+          lm_event["service"] = record["service"]
+          lm_event["namespace"] = record["namespace"] 
+        end
+      end
       return lm_event
     end
 
