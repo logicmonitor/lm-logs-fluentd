@@ -77,7 +77,9 @@ module Fluent
       events = []
       chunk.msgpack_each do |(tag, time, record)|
         event = process_record(tag,time,record)
-        events.push(event)
+        if event != nil
+          events.push(event)
+        end
       end
       send_batch(events)
     end
@@ -107,7 +109,7 @@ module Fluent
         lm_event["timestamp"] = Time.at(time).utc.to_datetime.rfc3339
       end
 
-      if @include_metadata || @device_less_logs
+      if @include_metadata
         record.each do |key, value|
           case key
           when *@metadata_to_exclude.concat(["timestamp","_lm.resourceId","log","message"])
