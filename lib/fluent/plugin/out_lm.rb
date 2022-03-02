@@ -8,6 +8,7 @@ require 'openssl'
 require 'base64'
 require 'net/http'
 require 'net/https'
+require('zlib')
 
 
 module Fluent
@@ -26,6 +27,16 @@ module Fluent
 
     config_param :debug,  :bool, :default => false
 
+    config_param :include_metadata,  :bool, :default => false
+		
+    config_param :force_encoding,  :string, :default => ""
+
+    config_param :compression,  :string, :default => ""
+
+    config_param :log_source,  :string, :default => "lm-logs-fluentd"
+
+    config_param :version_id,  :string, :default => "version_id"
+    
     # This method is called before starting.
     # 'conf' is a Hash that includes configuration parameters.
     # If the configuration is invalid, raise Fluent::ConfigError.
@@ -70,7 +81,7 @@ module Fluent
     def process_record(tag, time, record)
       resource_map = {}
       lm_event = {}
-      lm_event["message"] = record["message"]
+
       if record["_lm.resourceId"] == nil
           @resource_mapping.each do |key, value|
             k = value
@@ -84,8 +95,31 @@ module Fluent
       else
         lm_event["_lm.resourceId"] = record["_lm.resourceId"]
       end
+
+      if record["timestamp"] != nil
+        lm_event["timestamp"] = record["timestamp"]
+      else
+        lm_event["timestamp"] = Time.at(time).utc.to_datetime.rfc3339
+      end
+
+      if @include_metadata
+        record.each do |key, value|
+          if key != "timestamp" || key != "_lm.resourceId"
+              lm_event["#{key}"] = value
   
-      lm_event["timestamp"] = Time.at(time).utc.to_datetime.rfc3339
+              if @force_encoding != ""
+                  lm_event["#{key}"] = lm_event["#{key}"].force_encoding(@force_encoding).encode("UTF-8")
+              end
+          end
+        end
+      else
+        lm_event["message"] = record["message"]
+      
+        if @force_encoding != ""
+          lm_event["message"] = lm_event["message"].force_encoding(@force_encoding).encode("UTF-8")
+        end
+      end
+
       return lm_event
     end
 
@@ -104,8 +138,22 @@ module Fluent
 
       request = Net::HTTP::Post.new(uri.request_uri)
       request['authorization'] = generate_token(events)
-      request['Content-type'] = "application/json"  
-      request.body = body
+      request['Content-type'] = "application/json"
+      request['User-Agent'] = log_source + "/" + version_id
+
+      if @compression == "gzip"
+        request['Content-Encoding'] = "gzip"
+        gzip = Zlib::GzipWriter.new(StringIO.new)
+        gzip << body
+        request.body = gzip.close.string
+      else
+        request.body = body
+      end
+
+      if @debug
+        log.info "Sending the below request headers to logicmonitor:"
+        request.each_header {|key,value| log.info "#{key} = #{value}" }
+      end
 
       resp = http.request(request)
       if @debug || (!resp.kind_of? Net::HTTPSuccess)

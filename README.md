@@ -1,6 +1,6 @@
 
 [![Gem Version](https://badge.fury.io/rb/fluent-plugin-lm-logs.svg)](http://badge.fury.io/rb/fluent-plugin-lm-logs)
-# lm-logs-fluentd (beta)
+# lm-logs-fluentd
 This output plugin sends Fluentd records to the configured LogicMonitor account.
 
 ## Prerequisites
@@ -68,3 +68,5 @@ See the [LogicMonitor Helm repository](https://github.com/logicmonitor/k8s-helm-
 | `access_key` | LM API Token access key. |
 | `flush_interval` | Defines the time in seconds to wait before sending batches of logs to LogicMonitor. Default is `60s`. |
 | `debug` | When `true`, logs more information to the fluentd console. |
+| `force_encoding` | Specify charset when logs contains invalid utf-8 characters. |
+
