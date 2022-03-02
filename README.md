@@ -6,8 +6,8 @@ This output plugin sends Fluentd records to the configured LogicMonitor account.
 ## Prerequisites
 
 Install the plugin:
-* With gem:       `gem install fluent-plugin-lm-logs`
-* For deb packages:       `td-agent-gem install fluent-plugin-lm-logs`
+* With gem (if td-agent/fluentd is installed along with native ruby):       `gem install fluent-plugin-lm-logs`
+* For native td-agent/fluentd plugin handling:       `td-agent-gem install fluent-plugin-lm-logs`
 
 Alternatively, you can add `out_lm.rb` to your Fluentd plugins directory.
 
@@ -70,6 +70,7 @@ See the [LogicMonitor Helm repository](https://github.com/logicmonitor/k8s-helm-
 | `debug` | When `true`, logs more information to the fluentd console. |
 | `force_encoding` | Specify charset when logs contains invalid utf-8 characters. |
 | `include_metadata` | When `true`, appends additional metadata to the log. default `false`.  |
-| `device_less_logs` | When `true`, do not map log with any resource and append metadata. record must have `service` and `namespace` when `true`. default `false`. |
+| `device_less_logs` | When `true`, do not map log with any resource. record must have `service` and `namespace` when `true`. default `false`. |
 | `metadata_to_exclude` | `String array` of keys of metadata to exclude. default `empty` |
+
 
