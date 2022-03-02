@@ -36,7 +36,11 @@ module Fluent
     config_param :log_source,  :string, :default => "lm-logs-fluentd"
 
     config_param :version_id,  :string, :default => "version_id"
-    
+
+    config_param :device_less_logs,  :bool, :default => false
+
+    config_param :metadata_to_exclude,  :array, default: [], value_type: :string
+  
     # This method is called before starting.
     # 'conf' is a Hash that includes configuration parameters.
     # If the configuration is invalid, raise Fluent::ConfigError.
@@ -73,7 +77,9 @@ module Fluent
       events = []
       chunk.msgpack_each do |(tag, time, record)|
         event = process_record(tag,time,record)
-        events.push(event)
+        if event != nil
+          events.push(event)
+        end
       end
       send_batch(events)
     end
@@ -81,19 +87,20 @@ module Fluent
     def process_record(tag, time, record)
       resource_map = {}
       lm_event = {}
-
-      if record["_lm.resourceId"] == nil
-          @resource_mapping.each do |key, value|
-            k = value
-            nestedVal = record
-            key.to_s.split('.').each { |x| nestedVal = nestedVal[x] }
-            if nestedVal != nil
-              resource_map[k] = nestedVal
+      if !@device_less_logs
+        if record["_lm.resourceId"] == nil
+            @resource_mapping.each do |key, value|
+              k = value
+              nestedVal = record
+              key.to_s.split('.').each { |x| nestedVal = nestedVal[x] }
+              if nestedVal != nil
+                resource_map[k] = nestedVal
+              end
             end
-          end
-        lm_event["_lm.resourceId"] = resource_map
-      else
-        lm_event["_lm.resourceId"] = record["_lm.resourceId"]
+          lm_event["_lm.resourceId"] = resource_map
+        else
+          lm_event["_lm.resourceId"] = record["_lm.resourceId"]
+        end
       end
 
       if record["timestamp"] != nil
@@ -104,7 +111,9 @@ module Fluent
 
       if @include_metadata
         record.each do |key, value|
-          if key != "timestamp" || key != "_lm.resourceId"
+          case key
+          when *@metadata_to_exclude.concat(["timestamp","_lm.resourceId","log","message"])
+          else    
               lm_event["#{key}"] = value
   
               if @force_encoding != ""
@@ -112,14 +121,22 @@ module Fluent
               end
           end
         end
-      else
-        lm_event["message"] = record["message"]
-      
-        if @force_encoding != ""
-          lm_event["message"] = lm_event["message"].force_encoding(@force_encoding).encode("UTF-8")
-        end
+      end
+      lm_event["message"] = record["message"]
+    
+      if @force_encoding != ""
+        lm_event["message"] = lm_event["message"].force_encoding(@force_encoding).encode("UTF-8")
       end
 
+      if @device_less_logs
+        if record["service"]==nil || record["namespace"] == nil
+          log.error "When device_less_logs is set \'true\', record must have \'service\' and \'namespace\'. Ignoring this event #{lm_event}."
+          return nil
+        else
+          lm_event["service"] = record["service"]
+          lm_event["namespace"] = record["namespace"] 
+        end
+      end
       return lm_event
     end
 
