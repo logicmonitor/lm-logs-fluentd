@@ -6,8 +6,8 @@ This output plugin sends Fluentd records to the configured LogicMonitor account.
 ## Prerequisites
 
 Install the plugin:
-* With gem:       `gem install fluent-plugin-lm-logs`
-* For deb packages:       `td-agent-gem install fluent-plugin-lm-logs`
+* With gem (if td-agent/fluentd is installed along with native ruby):       `gem install fluent-plugin-lm-logs`
+* For native td-agent/fluentd plugin handling:       `td-agent-gem install fluent-plugin-lm-logs`
 
 Alternatively, you can add `out_lm.rb` to your Fluentd plugins directory.
 
@@ -69,3 +69,4 @@ See the [LogicMonitor Helm repository](https://github.com/logicmonitor/k8s-helm-
 | `flush_interval` | Defines the time in seconds to wait before sending batches of logs to LogicMonitor. Default is `60s`. |
 | `debug` | When `true`, logs more information to the fluentd console. |
 | `force_encoding` | Specify charset when logs contains invalid utf-8 characters. |
+
