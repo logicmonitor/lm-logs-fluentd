@@ -1,0 +1,23 @@
+{
+    "message":"Really long message which used to increse size of the log. Honestly, I don't mind you reading this.. Go ahead. Please dont mind typo here..........",
+    "timestamp":"2020-10-30T00:29:08.629701504Z",
+    "metaKeywhichIsSupposedToBeHuge1":"Really long meta which used to increse size of the log. Honestly, I don't mind you reading this.. Go ahead ",
+    "metaKeywhichIsSupposedToBeHuge2":"Really long meta which used to increse size of the log. Honestly, I don't mind you reading this.. Go ahead",
+    "metaKeywhichIsSupposedToBeHuge3":"Really long meta which used to increse size of the log. Honestly, I don't mind you reading this.. Go ahead",
+    "metaKeywhichIsSupposedToBeHuge4":"Really long meta which used to increse size of the log. Honestly, I don't mind you reading this.. Go ahead",
+    "metaKeywhichIsSupposedToBeHuge5":{
+       "metaKeywhichIsSupposedToBeHugekey1":"Really long meta which used to increse size of the log. Honestly, I don't mind you reading this.. Go ahead",
+       "metaKeywhichIsSupposedToBeHugekey2":{
+          "metaKeywhichIsSupposedToBeHugekey2_1":"Really long meta which used to increse size of the log. Honestly, I don't mind you reading this.. Go ahead",
+          "metaKeywhichIsSupposedToBeHugekey2_2":"Really long meta which used to increse size of the log. Honestly, I don't mind you reading this.. Go ahead",
+          "metaKeywhichIsSupposedToBeHugekey2_3":"Really long meta which used to increse size of the log. Honestly, I don't mind you reading this.. Go ahead",
+          "metaKeywhichIsSupposedToBeHugekey2_4":"Really long meta which used to increse size of the log. Honestly, I don't mind you reading this.. Go ahead"
+       },
+       "metaKeywhichIsSupposedToBeHugekey3":"Really long meta which used to increse size of the log. Honestly, I don't mind you reading this.. Go ahead",
+       "metaKeywhichIsSupposedToBeHugekey4":"Really long meta which used to increse size of the log. Honestly, I don't mind you reading this.. Go ahead",
+       "metaKeywhichIsSupposedToBeHugekey5":"Really long meta which used to increse size of the log. Honestly, I don't mind you reading this.. Go ahead"
+    },
+    "someProp":"somePropValABCD",
+    "service":"lm-service",
+    "namespace":"lm-namepsace"
+ }

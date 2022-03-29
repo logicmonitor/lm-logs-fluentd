@@ -38,8 +38,6 @@ module Fluent
     config_param :version_id,  :string, :default => "version_id"
 
     config_param :device_less_logs,  :bool, :default => false
-
-    config_param :metadata_to_exclude,  :array, default: [], value_type: :string
   
     # This method is called before starting.
     # 'conf' is a Hash that includes configuration parameters.
@@ -87,6 +85,11 @@ module Fluent
     def process_record(tag, time, record)
       resource_map = {}
       lm_event = {}
+
+      if @include_metadata
+        lm_event = get_metadata(record)
+      end
+
       if !@device_less_logs
         if record["_lm.resourceId"] == nil
             @resource_mapping.each do |key, value|
@@ -101,6 +104,13 @@ module Fluent
         else
           lm_event["_lm.resourceId"] = record["_lm.resourceId"]
         end
+      else
+        if record["service"]==nil
+          log.error "When device_less_logs is set \'true\', record must have \'service\'. Ignoring this event #{lm_event}."
+          return nil
+        else
+          lm_event["service"] = encode_if_necessary(record["service"]) 
+        end  
       end
 
       if record["timestamp"] != nil
@@ -109,35 +119,35 @@ module Fluent
         lm_event["timestamp"] = Time.at(time).utc.to_datetime.rfc3339
       end
 
-      if @include_metadata
-        record.each do |key, value|
-          case key
-          when *@metadata_to_exclude.concat(["timestamp","_lm.resourceId","log","message"])
-          else    
-              lm_event["#{key}"] = value
-  
-              if @force_encoding != ""
-                  lm_event["#{key}"] = lm_event["#{key}"].force_encoding(@force_encoding).encode("UTF-8")
-              end
-          end
-        end
-      end
-      lm_event["message"] = record["message"]
-    
-      if @force_encoding != ""
-        lm_event["message"] = lm_event["message"].force_encoding(@force_encoding).encode("UTF-8")
-      end
+      lm_event["message"] = encode_if_necessary(record["message"])
 
-      if @device_less_logs
-        if record["service"]==nil || record["namespace"] == nil
-          log.error "When device_less_logs is set \'true\', record must have \'service\' and \'namespace\'. Ignoring this event #{lm_event}."
-          return nil
-        else
-          lm_event["service"] = record["service"]
-          lm_event["namespace"] = record["namespace"] 
-        end
-      end
       return lm_event
+    end
+
+    def get_metadata(record)
+      #if encoding is not defined we will skip going through each key val 
+      #and return the whole record for performance reasons in case of a bulky record.
+      if @force_encoding == "" 
+        return record
+      else
+        lm_event = {}
+        record.each do |key, value| 
+          lm_event["#{key}"] = get_encoded_string(value)
+        end
+        return lm_event
+      end
+    end
+
+    def encode_if_necessary(str)
+      if @force_encoding != ""
+        return get_encoded_string(str)
+      else
+        return str
+      end
+    end
+
+    def get_encoded_string(str)
+      return str.force_encoding(@force_encoding).encode("UTF-8")
     end
 
     def send_batch(events)
