@@ -70,7 +70,7 @@ See the [LogicMonitor Helm repository](https://github.com/logicmonitor/k8s-helm-
 | `debug` | When `true`, logs more information to the fluentd console. |
 | `force_encoding` | Specify charset when logs contains invalid utf-8 characters. |
 | `include_metadata` | When `true`, appends additional metadata to the log. default `false`.  |
-| `device_less_logs` | When `true`, do not map log with any resource. record must have `service` and `namespace` when `true`. default `false`. |
-| `metadata_to_exclude` | `String array` of keys of metadata to exclude. default `empty` |
+| `device_less_logs` | When `true`, do not map log with any resource. record must have `service` when `true`. default `false`. |
+
 
 

@@ -148,34 +148,5 @@ class FluentLMTest < Test::Unit::TestCase
       assert_equal expected, result
     end
 
-    test "include_metadata true, try to include everything except in metadata_to_exclude" do
-      plugin = create_driver(%[
-        resource_mapping {"someProp": "lm_property"} 
-        include_metadata true
-        metadata_to_exclude ["meta1", "meta3","someProp"]
-      ]).instance
-      tag = "lm.test"
-      time = Time.parse("2020-08-23T00:53:15+00:00").to_i
-      record = {"message" => "Hello from test",  
-                "timestamp" => "2020-10-30T00:29:08.629701504Z" , 
-                "meta1" => "testMeta1" , 
-                "meta2" => "testMeta2", 
-                "meta3" => "testMeta3", 
-                "meta4" => "testMeta4", 
-                "meta5" => {"key1" => "value1", "key2" => {"key2_1" => "value2_1"}}, 
-                "someProp" => "resourcePropVal" }
-
-      result = plugin.process_record(tag, time, record)
-        
-      expected = {
-          "message" => "Hello from test",
-          "timestamp" => "2020-10-30T00:29:08.629701504Z",
-          "_lm.resourceId" => {"lm_property" => "resourcePropVal"},
-          "meta2" => "testMeta2",
-          "meta4" => "testMeta4", 
-          "meta5" => {"key1" => "value1", "key2" => {"key2_1" => "value2_1"}},
-      }
-      assert_equal expected, result
-    end
   end
 end
