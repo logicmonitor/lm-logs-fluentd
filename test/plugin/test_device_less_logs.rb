@@ -32,8 +32,8 @@ class FluentLMTest < Test::Unit::TestCase
                 "tag" => "lm.test", 
                 "meta1" => "metadata1", 
                 "meta2" => "metadata2", 
-                "service" => "lm-service", 
-                "namespace" => "lm-namepsace",
+                "resource.service.name" => "lm-service", 
+                "resource.service.namespace" => "lm-namepsace",
                 "someProp" => "someVal"}
 
       result = plugin.process_record(tag, time, record)
@@ -41,7 +41,7 @@ class FluentLMTest < Test::Unit::TestCase
       expected = {
           "message" => "Hello from test",
           "timestamp" => "2020-10-30T00:29:08.629701504Z",
-          "service" => "lm-service"
+          "resource.service.name" => "lm-service"
       }
       assert_equal expected, result
     end
@@ -62,7 +62,7 @@ class FluentLMTest < Test::Unit::TestCase
                 "meta3" => "testMeta3", 
                 "meta4" => "testMeta4", 
                 "meta5" => {"key1" => "value1", "key2" => {"key2_1" => "value2_1"}}, 
-                "service" => "lm-service" }
+                "resource.service.name" => "lm-service" }
 
       result = plugin.process_record(tag, time, record)
         
@@ -74,7 +74,7 @@ class FluentLMTest < Test::Unit::TestCase
           "meta3" => "testMeta3", 
           "meta4" => "testMeta4", 
           "meta5" => {"key1" => "value1", "key2" => {"key2_1" => "value2_1"}}, 
-          "service" => "lm-service"
+          "resource.service.name" => "lm-service"
       }
       assert_equal expected, result
     end
