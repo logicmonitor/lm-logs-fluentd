@@ -105,11 +105,11 @@ module Fluent
           lm_event["_lm.resourceId"] = record["_lm.resourceId"]
         end
       else
-        if record["service"]==nil
+        if record["resource.service.name"]==nil
           log.error "When device_less_logs is set \'true\', record must have \'service\'. Ignoring this event #{lm_event}."
           return nil
         else
-          lm_event["service"] = encode_if_necessary(record["service"]) 
+          lm_event["resource.service.name"] = encode_if_necessary(record["resource.service.name"]) 
         end  
       end
 
