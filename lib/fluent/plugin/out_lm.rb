@@ -15,6 +15,10 @@ module Fluent
   class LmOutput < BufferedOutput
     Fluent::Plugin.register_output('lm', self)
 
+    RESOURCE_MAPPING_KEY      = "_lm.resourceId".freeze
+    DEVICELESS_KEY_SERVICE    = "resource.service.name".freeze
+    DEVICELESS_KEY_NAMESPACE  = "resource.service.namespace".freeze
+
     # config_param defines a parameter. You can refer a parameter via @path instance variable
 
     config_param :access_id,  :string, :default => "access_id"
@@ -91,7 +95,8 @@ module Fluent
       end
 
       if !@device_less_logs
-        if record["_lm.resourceId"] == nil
+        # With devices
+        if record[RESOURCE_MAPPING_KEY] == nil
             @resource_mapping.each do |key, value|
               k = value
               nestedVal = record
@@ -100,17 +105,21 @@ module Fluent
                 resource_map[k] = nestedVal
               end
             end
-          lm_event["_lm.resourceId"] = resource_map
+          lm_event[RESOURCE_MAPPING_KEY] = resource_map
         else
-          lm_event["_lm.resourceId"] = record["_lm.resourceId"]
+          lm_event[RESOURCE_MAPPING_KEY] = record[RESOURCE_MAPPING_KEY]
         end
       else
-        if record["service"]==nil
+        # Device less
+        if record[DEVICELESS_KEY_SERVICE]==nil
           log.error "When device_less_logs is set \'true\', record must have \'service\'. Ignoring this event #{lm_event}."
           return nil
         else
-          lm_event["service"] = encode_if_necessary(record["service"]) 
-        end  
+          lm_event[DEVICELESS_KEY_SERVICE] = encode_if_necessary(record[DEVICELESS_KEY_SERVICE])
+          if record[DEVICELESS_KEY_NAMESPACE]!=nil
+            lm_event[DEVICELESS_KEY_NAMESPACE] = encode_if_necessary(record[DEVICELESS_KEY_NAMESPACE]) 
+          end
+        end
       end
 
       if record["timestamp"] != nil

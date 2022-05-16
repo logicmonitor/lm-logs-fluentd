@@ -32,8 +32,8 @@ class FluentLMTest < Test::Unit::TestCase
                 "tag" => "lm.test", 
                 "meta1" => "metadata1", 
                 "meta2" => "metadata2", 
-                "service" => "lm-service", 
-                "namespace" => "lm-namepsace",
+                "resource.service.name" => "lm-service", 
+                "resource.service.namespace" => "lm-namepsace",
                 "someProp" => "someVal"}
 
       result = plugin.process_record(tag, time, record)
@@ -41,7 +41,8 @@ class FluentLMTest < Test::Unit::TestCase
       expected = {
           "message" => "Hello from test",
           "timestamp" => "2020-10-30T00:29:08.629701504Z",
-          "service" => "lm-service"
+          "resource.service.name" => "lm-service",
+          "resource.service.namespace" => "lm-namepsace"
       }
       assert_equal expected, result
     end
@@ -62,7 +63,7 @@ class FluentLMTest < Test::Unit::TestCase
                 "meta3" => "testMeta3", 
                 "meta4" => "testMeta4", 
                 "meta5" => {"key1" => "value1", "key2" => {"key2_1" => "value2_1"}}, 
-                "service" => "lm-service" }
+                "resource.service.name" => "lm-service" }
 
       result = plugin.process_record(tag, time, record)
         
@@ -74,7 +75,7 @@ class FluentLMTest < Test::Unit::TestCase
           "meta3" => "testMeta3", 
           "meta4" => "testMeta4", 
           "meta5" => {"key1" => "value1", "key2" => {"key2_1" => "value2_1"}}, 
-          "service" => "lm-service"
+          "resource.service.name" => "lm-service"
       }
       assert_equal expected, result
     end
@@ -93,6 +94,37 @@ class FluentLMTest < Test::Unit::TestCase
       result = plugin.process_record(tag, time, record)
         
       expected = nil
+      assert_equal expected, result
+    end
+
+
+    test "when device_less_logs is true and include_metadata is false record must have \'service\' and pick up namespace " do
+      plugin = create_driver(%[
+        resource_mapping {"a.b": "lm_property"} 
+        device_less_logs true
+        include_metadata false
+      ]).instance
+      tag = "lm.test"
+      time = Time.parse("2020-08-23T00:53:15+00:00").to_i
+      record = {
+        "message" => "Hello from test",  
+        "timestamp" => "2020-10-30T00:29:08.629701504Z" , 
+        "meta1" => "testMeta1" , 
+        "meta2" => "testMeta2", 
+        "meta3" => "testMeta3", 
+        "meta4" => "testMeta4", 
+        "meta5" => {"key1" => "value1", "key2" => {"key2_1" => "value2_1"}}, 
+        "resource.service.name" => "lm-service",
+        "resource.service.namespace" => "lm-namespace" }
+
+      result = plugin.process_record(tag, time, record)
+        
+      expected = {
+        "message" => "Hello from test",
+        "timestamp" => "2020-10-30T00:29:08.629701504Z",
+        "resource.service.name" => "lm-service",
+        "resource.service.namespace" => "lm-namespace"
+    }
       assert_equal expected, result
     end
   end
