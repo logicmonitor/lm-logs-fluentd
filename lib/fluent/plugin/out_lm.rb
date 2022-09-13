@@ -194,6 +194,7 @@ module Fluent
       resp = http.request(request)
       if @debug || (!resp.kind_of? Net::HTTPSuccess)
         log.info "Status code:#{resp.code} Request Id:#{resp.header['x-request-id']}"
+	log.info "Request body:#{resp.body}"
       end
     end
 
