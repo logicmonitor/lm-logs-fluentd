@@ -92,6 +92,10 @@ module Fluent
 
       if @include_metadata
         lm_event = get_metadata(record)
+        # fluentd filter plugin adds log message as metadata by default which is reduandant data and also increases the cost. 
+        if(lm_event.key?("log"))
+          lm_event.delete("log")
+        end
       end
 
       if !@device_less_logs
