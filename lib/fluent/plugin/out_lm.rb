@@ -194,7 +194,9 @@ module Fluent
       resp = http.request(request)
       if @debug || (!resp.kind_of? Net::HTTPSuccess)
         log.info "Status code:#{resp.code} Request Id:#{resp.header['x-request-id']}"
-	log.info "Request body:#{resp.body}"
+        if (resp.kind_of? Net::HTTPMultiStatus)
+	        log.info "Partial messages accepted by Logicmonitor. This might have been caused by a failure in resource mapping or logs older than 3 hrs."
+        end
       end
     end
 
