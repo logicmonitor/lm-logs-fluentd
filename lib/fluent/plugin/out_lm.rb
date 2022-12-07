@@ -42,6 +42,18 @@ module Fluent
     config_param :version_id,  :string, :default => "version_id"
 
     config_param :device_less_logs,  :bool, :default => false
+
+    config_param :proxy_host,  :string, :default => nil
+
+    config_param :proxy_port,  :string, :default => nil
+    
+    config_param :proxy_user,  :string, :default => nil
+
+    config_param :proxy_pass,  :string, :default => nil
+
+    config_param :proxy_use_ssl,  :bool, :default => false
+
+    config_param :proxy_ignore_cert_errors,  :bool, :default => false
   
     # This method is called before starting.
     # 'conf' is a Hash that includes configuration parameters.
@@ -169,8 +181,19 @@ module Fluent
         log.info "Request json #{body}"
       end
 
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
+      #Check if proxy settings were passed, if so open HTTP connection using supplied proxy settings
+      if (!@proxy_host.nil? && !@proxy_port.nil?)
+        if @debug
+          log.info "Using proxy settings #{proxy_host}:#{proxy_port} to send events to logicmonitor"
+        end
+        http = Net::HTTP.new(uri.host, uri.port, proxy_host, proxy_port, proxy_user, proxy_pass)
+        if @proxy_ignore_cert_errors
+          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        end
+        http.use_ssl = proxy_use_ssl
+      else
+        http = Net::HTTP.new(uri.host, uri.port)
+      end
 
       request = Net::HTTP::Post.new(uri.request_uri)
       request['authorization'] = generate_token(events)
@@ -191,12 +214,20 @@ module Fluent
         request.each_header {|key,value| log.info "#{key} = #{value}" }
       end
 
-      resp = http.request(request)
-      if @debug || (!resp.kind_of? Net::HTTPSuccess)
-        log.info "Status code:#{resp.code} Request Id:#{resp.header['x-request-id']}"
+      #Attempt sending request, if we get an exception, log the error. Could be an issue with proxy settings specified
+      begin
+        resp = http.request(request)
+
+        if @debug || (!resp.kind_of? Net::HTTPSuccess)
+          log.info "Status code:#{resp.code} Request Id:#{resp.header['x-request-id']}"
+        end
+        if (resp.kind_of? Net::HTTPMultiStatus)
+            log.info "Partial messages accepted by Logicmonitor. This might have been caused by a failure in resource mapping or logs older than 3 hrs."
+        end
+      rescue Net::HTTPServerException => e
+        log.info "Error submitting request:#{e}"
       end
     end
-
 
     def generate_token(events)
       timestamp = DateTime.now.strftime('%Q')

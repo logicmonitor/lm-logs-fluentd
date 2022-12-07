@@ -71,6 +71,11 @@ See the [LogicMonitor Helm repository](https://github.com/logicmonitor/k8s-helm-
 | `force_encoding` | Specify charset when logs contains invalid utf-8 characters. |
 | `include_metadata` | When `true`, appends additional metadata to the log. default `false`.  |
 | `device_less_logs` | When `true`, do not map log with any resource. record must have `service` when `true`. default `false`. |
-
+| `proxy_host` | Optional, specify the proxy server used for submitting log events. |
+| `proxy_port` | Optional, specify the proxy port used for submitting log events. |
+| `proxy_user` | Optional, specify the username used when connecting to the proxy host, if required. |
+| `proxy_pass` | Optional, specify the password used when connecting to the proxy host, if required. |
+| `proxy_use_ssl` | Optional, specify wether SSL is required for proxy server configuration. |
+| `proxy_ignore_cert_errors` | Optional, sets the flags for proxy server  certification verification at beginning of SSL/TLS session. |
 
 

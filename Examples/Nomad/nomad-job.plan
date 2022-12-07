@@ -1,0 +1,41 @@
+job "example-job" {
+    datacenters = ["example-dc"]
+    group "example-group" {
+        network {
+            port "http" {
+                static = "5678"
+            }
+        }
+        task "server" {
+            driver = "docker"
+            config {
+                image = "hashicorp/http-echo"
+                logging {
+                    type = "fluentd"
+                    config {
+                        fluentd-address = "localhost:24224"
+                        labels = "custom-label,nomad-region,nomad-task-name,nomad-job-name,nomad-host-dc,nomad-host"
+                    }
+                }
+                labels {
+                    custom-label="example custom label"
+                    nomad-region="${NOMAD_REGION}"
+                    nomad-task-name="${NOMAD_TASK_NAME}"
+                    nomad-job-name="${NOMAD_JOB_NAME}"
+                    nomad-host-dc="${node.datacenter}"
+                    nomad-host="${node.unique.name}"
+                }
+                ulimit {
+                    nofile = "40960:40960"
+                    }
+                ports = ["http"]
+                args = [
+                    "-listen",
+                    ":5678",
+                    "-text",
+                    "hello world",
+                ]
+            }
+        }
+    }
+}
