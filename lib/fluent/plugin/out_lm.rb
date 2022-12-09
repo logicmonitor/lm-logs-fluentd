@@ -193,6 +193,7 @@ module Fluent
         http.use_ssl = proxy_use_ssl
       else
         http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
       end
 
       request = Net::HTTP::Post.new(uri.request_uri)
