@@ -3,6 +3,7 @@ RUN mkdir /logicmonitor
 COPY ./ logicmonitor
 WORKDIR /logicmonitor
 RUN gem install fluentd
+RUN gem install net-http-persistent
 RUN ruby test/stable_performance_result_generator.rb
 RUN rake
 RUN bundle install

@@ -7,8 +7,12 @@ require 'json'
 require 'openssl'
 require 'base64'
 require 'net/http'
+require 'net/http/persistent'
 require 'net/https'
 require('zlib')
+
+require_relative "version"
+
 
 
 module Fluent
@@ -54,12 +58,18 @@ module Fluent
     # Open sockets or files here.
     def start
       super
+      @http_client = Net::HTTP::Persistent.new name: "fluent-plugin-lm-logs"
+      @http_client.override_headers["Content-Type"] = "application/json"
+      @http_client.override_headers["User-Agent"] = log_source + "/" + LmLogsFluentPlugin::VERSION
+      @url = "https://#{@company_name}.logicmonitor.com/rest/log/ingest"
+      @uri = URI.parse(@url)
     end
 
     # This method is called when shutting down.
     # Shutdown the thread and close sockets or files here.
     def shutdown
       super
+      @http_client.shutdown
     end
 
     # This method is called when an event reaches to Fluentd.
@@ -160,22 +170,15 @@ module Fluent
     end
 
     def send_batch(events)
-      url = "https://#{@company_name}.logicmonitor.com/rest/log/ingest"
       body = events.to_json
-      uri = URI.parse(url)
       
       if @debug
-        log.info "Sending #{events.length} events to logic monitor at #{url}"
+        log.info "Sending #{events.length} events to logic monitor at #{@url}"
         log.info "Request json #{body}"
       end
 
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-
-      request = Net::HTTP::Post.new(uri.request_uri)
+      request = Net::HTTP::Post.new(@uri.request_uri)
       request['authorization'] = generate_token(events)
-      request['Content-type'] = "application/json"
-      request['User-Agent'] = log_source + "/" + version_id
 
       if @compression == "gzip"
         request['Content-Encoding'] = "gzip"
@@ -191,7 +194,8 @@ module Fluent
         request.each_header {|key,value| log.info "#{key} = #{value}" }
       end
 
-      resp = http.request(request)
+      resp = @http_client.request @uri, request
+
       if @debug || (!resp.kind_of? Net::HTTPSuccess)
         log.info "Status code:#{resp.code} Request Id:#{resp.header['x-request-id']}"
       end
