@@ -71,6 +71,7 @@ See the [LogicMonitor Helm repository](https://github.com/logicmonitor/k8s-helm-
 | `force_encoding` | Specify charset when logs contains invalid utf-8 characters. |
 | `include_metadata` | When `true`, appends additional metadata to the log. default `false`.  |
 | `device_less_logs` | When `true`, do not map log with any resource. record must have `service` when `true`. default `false`. |
+| `http_proxy` | http proxy string eg. `http://user:pass@proxy.server:port`. Default `nil`  |
 
 
 
