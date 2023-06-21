@@ -46,6 +46,8 @@ module Fluent
     config_param :version_id,  :string, :default => "version_id"
 
     config_param :device_less_logs,  :bool, :default => false
+
+    config_param :http_proxy,   :string, :default => nil
   
     # This method is called before starting.
     # 'conf' is a Hash that includes configuration parameters.
@@ -58,7 +60,13 @@ module Fluent
     # Open sockets or files here.
     def start
       super
-      @http_client = Net::HTTP::Persistent.new name: "fluent-plugin-lm-logs"
+      proxy_uri = :ENV
+      if @http_proxy
+        proxy_uri = URI.parse(http_proxy)
+      elsif ENV['HTTP_PROXY'] || ENV['http_proxy']
+        log.info("Using HTTP proxy defined in environment variable")
+      end
+      @http_client = Net::HTTP::Persistent.new name: "fluent-plugin-lm-logs", proxy: proxy_uri
       @http_client.override_headers["Content-Type"] = "application/json"
       @http_client.override_headers["User-Agent"] = log_source + "/" + LmLogsFluentPlugin::VERSION
       @url = "https://#{@company_name}.logicmonitor.com/rest/log/ingest"
@@ -195,9 +203,8 @@ module Fluent
       end
 
       resp = @http_client.request @uri, request
-
-      if @debug || (!resp.kind_of? Net::HTTPSuccess)
-        log.info "Status code:#{resp.code} Request Id:#{resp.header['x-request-id']}"
+      if @debug || resp.kind_of?(Net::HTTPMultiStatus) || !resp.kind_of?(Net::HTTPSuccess) 
+        log.info "Status code:#{resp.code} Request Id:#{resp.header['x-request-id']} message:#{resp.body}"
       end
     end
 
