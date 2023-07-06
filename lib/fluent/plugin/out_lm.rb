@@ -25,9 +25,9 @@ module Fluent
 
     # config_param defines a parameter. You can refer a parameter via @path instance variable
 
-    config_param :access_id,  :string, :default => "access_id"
+    config_param :access_id,  :string, :default => nil
 
-    config_param :access_key,  :string, :default => "access_key"
+    config_param :access_key,  :string, :default => nil, secret: true
 
     config_param :company_name,  :string, :default => "company_name"
 
@@ -49,6 +49,9 @@ module Fluent
 
     config_param :http_proxy,   :string, :default => nil
   
+    # Use bearer token for auth.
+    config_param :bearer_token, :string, :default => nil, secret: true
+
     # This method is called before starting.
     # 'conf' is a Hash that includes configuration parameters.
     # If the configuration is invalid, raise Fluent::ConfigError.
@@ -60,6 +63,7 @@ module Fluent
     # Open sockets or files here.
     def start
       super
+      configure_auth
       proxy_uri = :ENV
       if @http_proxy
         proxy_uri = URI.parse(http_proxy)
@@ -73,6 +77,17 @@ module Fluent
       @uri = URI.parse(@url)
     end
 
+    def configure_auth
+      @use_bearer_instead_of_lmv1 = false
+      if @access_id == nil || @access_key == nil
+        log.info "Access Id or access key null. Using bearer token for authentication."
+        @use_bearer_instead_of_lmv1 = true
+      end  
+      if @use_bearer_instead_of_lmv1 && @bearer_token == nil 
+        log.error "Bearer token not specified. Either access_id and access_key both or bearer_token must be specified for authentication with Logicmonitor."
+        raise ArgumentError, 'No valid authentication specified. Either access_id and access_key both or bearer_token must be specified for authentication with Logicmonitor.'
+      end
+    end
     # This method is called when shutting down.
     # Shutdown the thread and close sockets or files here.
     def shutdown
@@ -210,15 +225,20 @@ module Fluent
 
 
     def generate_token(events)
-      timestamp = DateTime.now.strftime('%Q')
-      signature = Base64.strict_encode64(
-          OpenSSL::HMAC.hexdigest(
-              OpenSSL::Digest.new('sha256'),
-              @access_key,
-              "POST#{timestamp}#{events.to_json}/log/ingest"
-          )
-      )
-      "LMv1 #{@access_id}:#{signature}:#{timestamp}"
+
+      if @use_bearer_instead_of_lmv1
+        return "Bearer #{@bearer_token}"
+      else  
+        timestamp = DateTime.now.strftime('%Q')
+        signature = Base64.strict_encode64(
+            OpenSSL::HMAC.hexdigest(
+                OpenSSL::Digest.new('sha256'),
+                @access_key,
+                "POST#{timestamp}#{events.to_json}/log/ingest"
+            )
+        )
+        return "LMv1 #{@access_id}:#{signature}:#{timestamp}"
+      end  
     end
   end
 end
