@@ -36,7 +36,7 @@ module Fluent
     config_param :debug,  :bool, :default => false
 
     config_param :include_metadata,  :bool, :default => false
-		
+
     config_param :force_encoding,  :string, :default => ""
 
     config_param :compression,  :string, :default => ""
@@ -48,7 +48,7 @@ module Fluent
     config_param :device_less_logs,  :bool, :default => false
 
     config_param :http_proxy,   :string, :default => nil
-  
+
     # Use bearer token for auth.
     config_param :bearer_token, :string, :default => nil, secret: true
 
@@ -57,6 +57,10 @@ module Fluent
     # If the configuration is invalid, raise Fluent::ConfigError.
     def configure(conf)
       super
+    end
+
+    def multi_workers_ready?
+      true
     end
 
     # This method is called when starting.
@@ -82,8 +86,8 @@ module Fluent
       if @access_id == nil || @access_key == nil
         log.info "Access Id or access key null. Using bearer token for authentication."
         @use_bearer_instead_of_lmv1 = true
-      end  
-      if @use_bearer_instead_of_lmv1 && @bearer_token == nil 
+      end
+      if @use_bearer_instead_of_lmv1 && @bearer_token == nil
         log.error "Bearer token not specified. Either access_id and access_key both or bearer_token must be specified for authentication with Logicmonitor."
         raise ArgumentError, 'No valid authentication specified. Either access_id and access_key both or bearer_token must be specified for authentication with Logicmonitor.'
       end
@@ -150,7 +154,7 @@ module Fluent
         else
           lm_event[DEVICELESS_KEY_SERVICE] = encode_if_necessary(record[DEVICELESS_KEY_SERVICE])
           if record[DEVICELESS_KEY_NAMESPACE]!=nil
-            lm_event[DEVICELESS_KEY_NAMESPACE] = encode_if_necessary(record[DEVICELESS_KEY_NAMESPACE]) 
+            lm_event[DEVICELESS_KEY_NAMESPACE] = encode_if_necessary(record[DEVICELESS_KEY_NAMESPACE])
           end
         end
       end
@@ -167,13 +171,13 @@ module Fluent
     end
 
     def get_metadata(record)
-      #if encoding is not defined we will skip going through each key val 
+      #if encoding is not defined we will skip going through each key val
       #and return the whole record for performance reasons in case of a bulky record.
-      if @force_encoding == "" 
+      if @force_encoding == ""
         return record
       else
         lm_event = {}
-        record.each do |key, value| 
+        record.each do |key, value|
           lm_event["#{key}"] = get_encoded_string(value)
         end
         return lm_event
@@ -194,7 +198,7 @@ module Fluent
 
     def send_batch(events)
       body = events.to_json
-      
+
       if @debug
         log.info "Sending #{events.length} events to logic monitor at #{@url}"
         log.info "Request json #{body}"
@@ -218,7 +222,7 @@ module Fluent
       end
 
       resp = @http_client.request @uri, request
-      if @debug || resp.kind_of?(Net::HTTPMultiStatus) || !resp.kind_of?(Net::HTTPSuccess) 
+      if @debug || resp.kind_of?(Net::HTTPMultiStatus) || !resp.kind_of?(Net::HTTPSuccess)
         log.info "Status code:#{resp.code} Request Id:#{resp.header['x-request-id']} message:#{resp.body}"
       end
     end
@@ -228,7 +232,7 @@ module Fluent
 
       if @use_bearer_instead_of_lmv1
         return "Bearer #{@bearer_token}"
-      else  
+      else
         timestamp = DateTime.now.strftime('%Q')
         signature = Base64.strict_encode64(
             OpenSSL::HMAC.hexdigest(
@@ -238,7 +242,7 @@ module Fluent
             )
         )
         return "LMv1 #{@access_id}:#{signature}:#{timestamp}"
-      end  
+      end
     end
   end
 end
