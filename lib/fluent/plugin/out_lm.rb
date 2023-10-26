@@ -83,11 +83,11 @@ module Fluent
 
     def configure_auth
       @use_bearer_instead_of_lmv1 = false
-      if @access_id == nil || @access_key == nil
-        log.info "Access Id or access key null. Using bearer token for authentication."
+      if is_blank(@access_id) || is_blank(@access_key)
+        log.info "Access Id or access key blank / null. Using bearer token for authentication."
         @use_bearer_instead_of_lmv1 = true
       end
-      if @use_bearer_instead_of_lmv1 && @bearer_token == nil
+      if @use_bearer_instead_of_lmv1 && is_blank(@bearer_token)
         log.error "Bearer token not specified. Either access_id and access_key both or bearer_token must be specified for authentication with Logicmonitor."
         raise ArgumentError, 'No valid authentication specified. Either access_id and access_key both or bearer_token must be specified for authentication with Logicmonitor.'
       end
@@ -244,5 +244,14 @@ module Fluent
         return "LMv1 #{@access_id}:#{signature}:#{timestamp}"
       end
     end
+
+    def is_blank(str)
+      if str.nil? || str.to_s.strip.empty?
+        return true
+      else
+        return false
+      end
+    end
+
   end
 end

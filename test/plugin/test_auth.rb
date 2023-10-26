@@ -34,10 +34,10 @@ class FluentLMTest < Test::Unit::TestCase
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00")
       record = {
-                "message" => "Hello there",  
-                "timestamp" => "2020-10-30T00:29:08.629701504Z" 
+                "message" => "Hello there",
+                "timestamp" => "2020-10-30T00:29:08.629701504Z"
                      }
-      events = [record]  
+      events = [record]
 
       result = plugin.generate_token(events)
       assert_match "LMv1 abcd:", result
@@ -51,16 +51,16 @@ class FluentLMTest < Test::Unit::TestCase
       plugin.configure_auth()
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
-      record = {"message" => "Hello from test",  
-                "timestamp" => "2020-10-30T00:29:08.629701504Z" 
+      record = {"message" => "Hello from test",
+                "timestamp" => "2020-10-30T00:29:08.629701504Z"
               }
 
-      events = [record]  
+      events = [record]
 
       result = plugin.generate_token(events)
-        
+
       assert_match "Bearer abcd", result
-    end 
+    end
 
     test "when access id /key bearer all specified, use lmv1 " do
         plugin = create_driver(%[
@@ -71,15 +71,57 @@ class FluentLMTest < Test::Unit::TestCase
         plugin.configure_auth()
         tag = "lm.test"
         time = Time.parse("2020-08-23T00:53:15+00:00").to_i
-        record = {"message" => "Hello from test",  
-                  "timestamp" => "2020-10-30T00:29:08.629701504Z" 
+        record = {"message" => "Hello from test",
+                  "timestamp" => "2020-10-30T00:29:08.629701504Z"
                 }
-  
-        events = [record]  
-  
+
+        events = [record]
+
         result = plugin.generate_token(events)
-          
+
         assert_match "LMv1 abcd:", result
+    end
+
+    test "no null/empty value alllowd for access_id/access_key/bearer_token " do
+      plugin = create_driver(%[
+        access_id
+        access_key abcd
+        bearer_token abcd
+      ]).instance
+      plugin.configure_auth()
+      tag = "lm.test"
+      time = Time.parse("2020-08-23T00:53:15+00:00").to_i
+      record = {"message" => "Hello from test",
+                "timestamp" => "2020-10-30T00:29:08.629701504Z"
+              }
+
+      events = [record]
+
+      result = plugin.generate_token(events)
+
+      assert_match "Bearer abcd", result
+      
+      plugin2 = create_driver(%[
+        access_id
+        access_key abcd
+        bearer_token
+      ]).instance
+      assert_raise(ArgumentError) { plugin2.configure_auth() }
+
+      plugin3 = create_driver(%[
+        access_id abcd
+        access_key
+        bearer_token
+      ]).instance
+      assert_raise(ArgumentError) { plugin3.configure_auth() }
+
+      plugin4 = create_driver(%[
+        access_id
+        access_key
+        bearer_token
+      ]).instance
+      assert_raise(ArgumentError) { plugin4.configure_auth() }
+
     end
   end
 end
