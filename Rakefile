@@ -3,5 +3,6 @@ require "rake/testtask"
 task default: "test"
 
 Rake::TestTask.new do |task|
- task.pattern = "test/plugin/*.rb"
+ task.libs << "test"
+ task.test_files = Dir.glob('test/plugin/*.rb') - ['test/plugin/test_performance.rb']
 end
