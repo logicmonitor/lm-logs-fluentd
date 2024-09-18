@@ -22,6 +22,7 @@ Create a custom `fluent.conf` or edit the existing one to specify which logs sho
     @type lm
     resource_mapping {"<event_key>": "<lm_property>"}
     company_name <lm_company_name>
+    company_domain <lm_company_domain>
 	access_id <lm_access_id>
     access_key <lm_access_key>
       <buffer>
@@ -63,6 +64,7 @@ See the [LogicMonitor Helm repository](https://github.com/logicmonitor/k8s-helm-
 | Property | Description |
 | --- | --- |
 | `company_name` | LogicMonitor account name. |
+| `company_domain` | LogicMonitor account domain. For eg. for url test.logicmonitor.com, company_domain is logicmonitor. Default is `logicmonitor`. |
 | `resource_mapping` | The mapping that defines the source of the log event to the LM resource. In this case, the `<event_key>` in the incoming event is mapped to the value of `<lm_property>`.|
 | `access_id` | LM API Token access ID. |
 | `access_key` | LM API Token access key. |
