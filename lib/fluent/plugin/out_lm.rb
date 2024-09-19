@@ -49,6 +49,8 @@ module Fluent
 
     config_param :http_proxy,   :string, :default => nil
 
+    config_param :company_domain ,  :string, :default => "logicmonitor.com"
+
     # Use bearer token for auth.
     config_param :bearer_token, :string, :default => nil, secret: true
 
@@ -77,7 +79,7 @@ module Fluent
       @http_client = Net::HTTP::Persistent.new name: "fluent-plugin-lm-logs", proxy: proxy_uri
       @http_client.override_headers["Content-Type"] = "application/json"
       @http_client.override_headers["User-Agent"] = log_source + "/" + LmLogsFluentPlugin::VERSION
-      @url = "https://#{@company_name}.logicmonitor.com/rest/log/ingest"
+      @url = "https://#{@company_name}.#{@company_domain}/rest/log/ingest"
       @uri = URI.parse(@url)
     end
 
