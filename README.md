@@ -64,7 +64,7 @@ See the [LogicMonitor Helm repository](https://github.com/logicmonitor/k8s-helm-
 | Property | Description |
 | --- | --- |
 | `company_name` | LogicMonitor account name. |
-| `company_domain` | LogicMonitor account domain. For eg. for url test.logicmonitor.com, company_domain is logicmonitor. Default is `logicmonitor`. |
+| `company_domain` | LogicMonitor account domain. For eg. for url test.logicmonitor.com, company_domain is logicmonitor.com . Default is `logicmonitor.com`. |
 | `resource_mapping` | The mapping that defines the source of the log event to the LM resource. In this case, the `<event_key>` in the incoming event is mapped to the value of `<lm_property>`.|
 | `access_id` | LM API Token access ID. |
 | `access_key` | LM API Token access key. |
