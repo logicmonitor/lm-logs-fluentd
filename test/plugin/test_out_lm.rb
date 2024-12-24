@@ -32,6 +32,7 @@ class FluentLMTest < Test::Unit::TestCase
       result = plugin.process_record(tag, time, record)
     
       expected = {
+          "_resource.type"=>"Fluentd",
           "message" => "Hello from test",
           "_lm.resourceId" => record["_lm.resourceId"],
           "timestamp" => "2020-08-23T00:53:15+00:00"
@@ -51,6 +52,7 @@ class FluentLMTest < Test::Unit::TestCase
         result = plugin.process_record(tag, time, record)
       
         expected = {
+            "_resource.type"=>"Fluentd",
             "message" => "Hello from test",
             "_lm.resourceId" => {
                 "lm_property" => "lm_property_value"
@@ -93,6 +95,7 @@ class FluentLMTest < Test::Unit::TestCase
       result = plugin.process_record(tag, time, record)
         
       expected = {
+          "_resource.type"=>"Fluentd",
           "message" => "Hello from test",
           "_lm.resourceId" => {
               "lm_property" => "lm_property_value"
@@ -118,6 +121,7 @@ class FluentLMTest < Test::Unit::TestCase
       result = plugin.process_record(tag, time, record)
         
       expected = {
+          "_resource.type"=>"Fluentd",
           "message" => "Hello from test",
           "_lm.resourceId" => record["_lm.resourceId"],
           "timestamp" => "2020-10-30T00:29:08.629701504Z",
@@ -140,6 +144,7 @@ class FluentLMTest < Test::Unit::TestCase
       result = plugin.process_record(tag, time, record)
         
       expected = {
+          "_resource.type"=>"Fluentd",
           "message" => "Hello from test",
           "_lm.resourceId" => record["_lm.resourceId"],
           "timestamp" => "2020-10-30T00:29:08.629701504Z"
