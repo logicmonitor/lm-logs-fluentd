@@ -39,6 +39,7 @@ class FluentLMTest < Test::Unit::TestCase
       result = plugin.process_record(tag, time, record)
         
       expected = {
+          "_resource.type"=>"Fluentd",
           "message" => "Hello from test",
           "timestamp" => "2020-10-30T00:29:08.629701504Z",
           "resource.service.name" => "lm-service",
@@ -68,6 +69,7 @@ class FluentLMTest < Test::Unit::TestCase
       result = plugin.process_record(tag, time, record)
         
       expected = {
+          "_resource.type"=>"Fluentd",
           "message" => "Hello from test",
           "timestamp" => "2020-10-30T00:29:08.629701504Z",
           "meta1" => "testMeta1" , 
@@ -120,6 +122,7 @@ class FluentLMTest < Test::Unit::TestCase
       result = plugin.process_record(tag, time, record)
         
       expected = {
+        "_resource.type"=>"Fluentd",
         "message" => "Hello from test",
         "timestamp" => "2020-10-30T00:29:08.629701504Z",
         "resource.service.name" => "lm-service",
