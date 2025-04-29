@@ -10,6 +10,7 @@ require 'net/http'
 require 'net/http/persistent'
 require 'net/https'
 require('zlib')
+require_relative 'environment_detector'
 
 require_relative "version"
 
@@ -81,6 +82,8 @@ module Fluent
       @http_client.override_headers["User-Agent"] = log_source + "/" + LmLogsFluentPlugin::VERSION
       @url = "https://#{@company_name}.#{@company_domain}/rest/log/ingest"
       @uri = URI.parse(@url)
+      @environment_info = EnvironmentDetector.new.detect
+      log.info("Environment detected: #{@environment_info}")
     end
 
     def configure_auth
@@ -168,6 +171,7 @@ module Fluent
       end
       lm_event["_resource.type"] = "Fluentd"
       lm_event["message"] = encode_if_necessary(record["message"])
+      lm_event['environment'] = @environment_info
 
       return lm_event
     end
