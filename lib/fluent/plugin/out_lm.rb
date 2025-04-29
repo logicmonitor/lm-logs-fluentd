@@ -172,7 +172,7 @@ module Fluent
       end
       #lm_event["_resource.type"] = "Fluentd"
       lm_event["message"] = encode_if_necessary(record["message"])
-      lm_event['_resource.type'] = @detector.format_environment(@environment_info)
+      lm_event['_resource.type'] = format_environment(@environment_info)
 
       return lm_event
     end
@@ -257,6 +257,35 @@ module Fluent
         return true
       else
         return false
+      end
+    end
+
+    def format_environment(env_info)
+      runtime = env_info[:runtime]
+      provider = env_info[:provider] if env_info.key?(:provider)
+
+      case runtime
+      when 'kubernetes'
+        'Kubernetes/Node'
+      when 'docker'
+        'Docker/Host'
+      when 'vm'
+        case provider&.downcase
+        when 'azure'
+          'Azure/VirtualMachine'
+        when 'aws'
+          'AWS/EC2'
+        when 'gcp'
+          'GCP/ComputeEngine'
+        else
+          'Unknown/VirtualMachine'
+        end
+      when 'physical'
+        os = env_info[:os] || 'UnknownOS'
+        product = env_info[:product] || 'UnknownHardware'
+        "#{os} / #{product}"
+      else
+        'UnknownEnvironment'
       end
     end
 
