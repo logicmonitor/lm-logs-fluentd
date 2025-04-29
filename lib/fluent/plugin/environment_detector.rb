@@ -22,8 +22,12 @@ class EnvironmentDetector
   end
 
   def running_in_docker?
-    cgroup = File.read('/proc/1/cgroup') rescue ''
-    cgroup.include?('docker') || cgroup.include?('containerd')
+    return true if ENV['container'] == 'docker'
+
+    cgroup_content = File.read('/proc/1/cgroup') rescue ''
+    return true if cgroup_content.include?('docker') || cgroup_content.include?('containerd')
+
+    File.exist?('/.dockerenv')
   end
 
   def detect_host_environment
