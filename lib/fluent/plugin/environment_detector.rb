@@ -122,4 +122,11 @@ class EnvironmentDetector
     File.read(path).strip if File.exist?(path)
   end
 
+  def detect_node_info
+    {
+      node_os: detect_os,
+      node_product: detect_product_info
+    }
+  end
+
 end
