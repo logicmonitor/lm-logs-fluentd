@@ -117,4 +117,34 @@ class EnvironmentDetector
   def read_file(path)
     File.read(path).strip if File.exist?(path)
   end
+
+  def format_environment(env_info)
+    runtime = env_info[:runtime]
+    provider = env_info[:provider] if env_info.key?(:provider)
+
+    case runtime
+    when 'kubernetes'
+      'Kubernetes/Node'
+    when 'docker'
+      'Docker/Host'
+    when 'vm'
+      case provider&.downcase
+      when 'azure'
+        'Azure/VirtualMachine'
+      when 'aws'
+        'AWS/EC2'
+      when 'gcp'
+        'GCP/ComputeEngine'
+      else
+        'Unknown/VirtualMachine'
+      end
+    when 'physical'
+      os = env_info[:os] || 'UnknownOS'
+      product = env_info[:product] || 'UnknownHardware'
+      "#{os} / #{product}"
+    else
+      'UnknownEnvironment'
+    end
+  end
+
 end

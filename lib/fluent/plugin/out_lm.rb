@@ -82,7 +82,8 @@ module Fluent
       @http_client.override_headers["User-Agent"] = log_source + "/" + LmLogsFluentPlugin::VERSION
       @url = "https://#{@company_name}.#{@company_domain}/rest/log/ingest"
       @uri = URI.parse(@url)
-      @environment_info = EnvironmentDetector.new.detect
+      @detector = EnvironmentDetector.new
+      @environment_info = @detector.detect
       log.info("Environment detected: #{@environment_info}")
     end
 
@@ -169,9 +170,9 @@ module Fluent
       else
         lm_event["timestamp"] = Time.at(time).utc.to_datetime.rfc3339
       end
-      lm_event["_resource.type"] = "Fluentd"
+      #lm_event["_resource.type"] = "Fluentd"
       lm_event["message"] = encode_if_necessary(record["message"])
-      lm_event['environment'] = @environment_info
+      lm_event['_resource.type'] = @detector.format_environment(@environment_info)
 
       return lm_event
     end
