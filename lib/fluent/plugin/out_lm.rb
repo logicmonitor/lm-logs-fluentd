@@ -84,6 +84,8 @@ module Fluent
       @uri = URI.parse(@url)
       @detector = EnvironmentDetector.new
       @environment_info = @detector.detect
+      @local_env_str = @detector.format_environment(@environment_info)
+
       log.info("Environment detected: #{@environment_info}")
     end
 
