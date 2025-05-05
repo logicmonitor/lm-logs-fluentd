@@ -47,40 +47,40 @@ class EnvironmentDetector
   def infer_resource_type(record, tag = nil)
     return record['resource_type'] if record['resource_type']
 
-    host = record['host'] || record['hostname'] || ''
-    msg = record['message'] || ''
-    program = record['syslog_program'] || ''
+    host = (record['host'] || record['hostname'] || '').to_s
+    msg = (record['message'] || '').to_s
+    program = (record['syslog_program'] || '').to_s
     tags = record['tags'] || []
+    tag_down = tag&.downcase || ''
 
-    # From tag pattern
-    if tag&.include?('windows')
-      return 'WindowsServer'
-    elsif tag&.include?('linux')
-      return 'LinuxServer'
-    elsif tag&.include?('k8s') || tag&.include?('kubernetes')
-      return 'Kubernetes/Node'
-    elsif tag&.include?('docker')
-      return 'Docker/Host'
-    end
+    host_down = host.downcase
+    msg_down = msg.downcase
+    program_down = program.downcase
+    # From tag pattern (case-insensitive)
+    return 'WindowsServer' if tag_down.include?('windows')
+    return 'LinuxServer' if tag_down.include?('linux')
+    return 'Kubernetes/Node' if tag_down.include?('k8s') || tag_down.include?('kubernetes')
+    return 'Docker/Host' if tag_down.include?('docker')
 
     # Structured metadata
     return 'Kubernetes/Node' if record.key?('kubernetes')
     return 'Docker/Host' if record.key?('container_id') || record.dig('docker', 'container_id')
-    return 'AWS/EC2' if host.start_with?('ip-') || msg.include?('amazon')
-    return 'GCP/ComputeEngine' if host.include?('.c.') || host.include?('gcp')
-    return 'Azure/VirtualMachine' if host.include?('cloudapp.net') || msg.include?('azure')
-    return 'VMware/VirtualMachine' if msg.include?('vmware') || host.include?('vmware')
+    return 'AWS/VirtualMachine' if host_down.start_with?('ip-') || msg_down.include?('amazon')
+    return 'GCP/VirtualMachine' if host_down.include?('.c.') || host_down.include?('gcp')
+    return 'Azure/VirtualMachine' if host_down.include?('cloudapp.net') || msg_down.include?('azure')
+    return 'VMware/VirtualMachine' if msg_down.include?('vmware') || host_down.include?('vmware')
 
     return 'WindowsServer' if record.key?('EventID') || record.key?('ProviderName') || record.key?('Computer')
-    return 'LinuxServer' if record.key?('syslog_facility') || program != ''
+    return 'LinuxServer' if record.key?('syslog_facility') || program_down != ''
 
-    return 'Firewall' if program.downcase.include?('firewalld') || msg.downcase.include?('iptables') || msg.include?('blocked by policy')
-    return 'ACMEServer' if host.include?('acme') || msg.include?('ACME-Request') || tags.include?('acme')
-    return 'WebServer' if msg.include?('nginx') || msg.include?('apache')
-    return 'DatabaseServer' if msg.include?('mysql') || msg.include?('postgres') || msg.include?('oracle')
+    return 'Firewall' if program_down.downcase.include?('firewalld') || msg_down.downcase.include?('iptables') || msg_down.include?('blocked by policy')
+    return 'ACMEServer' if host_down.include?('acme') || msg_down.include?('ACME-Request') || tags.include?('acme')
+    return 'WebServer' if msg_down.include?('nginx') || msg_down.include?('apache')
+    return 'DatabaseServer' if msg_down.include?('mysql') || msg_down.include?('postgres') || msg_down.include?('oracle')
 
     'Unknown'
   end
+
 
   private
 
@@ -97,11 +97,16 @@ class EnvironmentDetector
 
   def detect_host_environment
     provider_info = detect_cloud_provider
-    if provider_info
-      { runtime: 'vm', provider: provider_info[:provider], details: provider_info[:details] }
-    else
-      { runtime: 'physical', os: detect_os, product: detect_product_info }
+    return { runtime: 'vm', provider: provider_info[:provider], details: provider_info[:details] } if provider_info
+
+    os = detect_os
+    product = detect_product_info
+
+    if product.downcase.include?('xen hvm domu') && os.downcase.include?('amazon')
+      return { runtime: 'vm', provider: 'aws', details: { os: os, product: product } }
     end
+
+    { runtime: 'physical', os: os, product: product }
   end
 
   def detect_node_info
