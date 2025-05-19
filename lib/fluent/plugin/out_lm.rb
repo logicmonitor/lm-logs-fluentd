@@ -10,6 +10,7 @@ require 'net/http'
 require 'net/http/persistent'
 require 'net/https'
 require('zlib')
+require_relative 'environment_detector'
 
 require_relative "version"
 
@@ -81,6 +82,11 @@ module Fluent
       @http_client.override_headers["User-Agent"] = log_source + "/" + LmLogsFluentPlugin::VERSION
       @url = "https://#{@company_name}.#{@company_domain}/rest/log/ingest"
       @uri = URI.parse(@url)
+      @detector = EnvironmentDetector.new
+      @environment_info = @detector.detect
+      @local_env_str = format_environment(@environment_info)
+
+      log.info("Environment detected: #{@environment_info}")
     end
 
     def configure_auth
@@ -166,8 +172,15 @@ module Fluent
       else
         lm_event["timestamp"] = Time.at(time).utc.to_datetime.rfc3339
       end
-      lm_event["_resource.type"] = "Fluentd"
+      #lm_event["_resource.type"] = "Fluentd"
       lm_event["message"] = encode_if_necessary(record["message"])
+
+      resource_type = @detector.infer_resource_type(record, tag)
+      if resource_type.nil? || resource_type.strip.empty? || resource_type == 'Unknown'
+        resource_type = @local_env_str
+      end
+
+      lm_event['_resource.type'] = resource_type
 
       return lm_event
     end
@@ -252,6 +265,35 @@ module Fluent
         return true
       else
         return false
+      end
+    end
+
+    def format_environment(env_info)
+      runtime = env_info[:runtime]
+      provider = env_info[:provider] if env_info.key?(:provider)
+
+      case runtime
+      when 'kubernetes'
+        'Kubernetes/Node'
+      when 'docker'
+        'Docker/Host'
+      when 'vm'
+        case provider&.downcase
+        when 'azure'
+          'Azure/VirtualMachine'
+        when 'aws'
+          'AWS/EC2'
+        when 'gcp'
+          'GCP/ComputeEngine'
+        else
+          'Unknown/VirtualMachine'
+        end
+      when 'physical'
+        os = env_info[:os] || 'UnknownOS'
+        product = env_info[:product] || 'UnknownHardware'
+        "#{os} / #{product}"
+      else
+        'UnknownEnvironment'
       end
     end
 
