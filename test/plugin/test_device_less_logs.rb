@@ -3,6 +3,12 @@ require "fluent/test/helpers"
 require "fluent/test/driver/output"
 require "./lib/fluent/plugin/out_lm"
 
+class StubDetector
+  def infer_resource_type(record, tag)
+    "Fluentd"
+  end
+end
+
 class FluentLMTest < Test::Unit::TestCase
   include Fluent::Test::Helpers
 
@@ -25,6 +31,7 @@ class FluentLMTest < Test::Unit::TestCase
         resource_mapping {"someProp": "lm_property"} 
         device_less_logs true
       ]).instance
+      plugin.instance_variable_set(:@detector, StubDetector.new)
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
       record = {"message" => "Hello from test",  
@@ -50,10 +57,11 @@ class FluentLMTest < Test::Unit::TestCase
 
     test "if device_less_logs and include_metadata true along with metadata, record needs service" do
       plugin = create_driver(%[
-        resource_mapping {"a.b": "lm_property"} 
+        resource_mapping {"a.b": "lm_property"}
         device_less_logs true
         include_metadata true
       ]).instance
+      plugin.instance_variable_set(:@detector, StubDetector.new)
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
       record = {
@@ -87,6 +95,7 @@ class FluentLMTest < Test::Unit::TestCase
         resource_mapping {"a.b": "lm_property"} 
         device_less_logs true
       ]).instance
+      plugin.instance_variable_set(:@detector, StubDetector.new)
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
       record = {"message" => "Hello from test",  
@@ -106,6 +115,7 @@ class FluentLMTest < Test::Unit::TestCase
         device_less_logs true
         include_metadata false
       ]).instance
+      plugin.instance_variable_set(:@detector, StubDetector.new)
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
       record = {
