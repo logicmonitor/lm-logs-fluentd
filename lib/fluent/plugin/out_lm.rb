@@ -172,7 +172,6 @@ module Fluent
       else
         lm_event["timestamp"] = Time.at(time).utc.to_datetime.rfc3339
       end
-      #lm_event["_resource.type"] = "Fluentd"
       lm_event["message"] = encode_if_necessary(record["message"])
 
       resource_type = @detector.infer_resource_type(record, tag)
