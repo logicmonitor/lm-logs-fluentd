@@ -52,6 +52,8 @@ module Fluent
 
     config_param :company_domain ,  :string, :default => "logicmonitor.com"
 
+    config_param :resource_type,  :string, :default => ""
+
     # Use bearer token for auth.
     config_param :bearer_token, :string, :default => nil, secret: true
 
@@ -174,7 +176,7 @@ module Fluent
       end
       lm_event["message"] = encode_if_necessary(record["message"])
 
-      resource_type = @detector.infer_resource_type(record, tag)
+      resource_type = @resource_type || @detector.infer_resource_type(record, tag)
       if resource_type.nil? || resource_type.strip.empty? || resource_type == 'Unknown'
         resource_type = @local_env_str
       end
