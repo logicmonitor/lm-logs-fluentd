@@ -32,6 +32,7 @@ class FluentLMTest < Test::Unit::TestCase
         device_less_logs true
       ]).instance
       plugin.instance_variable_set(:@detector, StubDetector.new)
+      plugin.instance_variable_set(:@resource_type, "Fluentd")
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
       record = {"message" => "Hello from test",  
@@ -62,6 +63,7 @@ class FluentLMTest < Test::Unit::TestCase
         include_metadata true
       ]).instance
       plugin.instance_variable_set(:@detector, StubDetector.new)
+      plugin.instance_variable_set(:@resource_type, "Fluentd")
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
       record = {
@@ -96,6 +98,7 @@ class FluentLMTest < Test::Unit::TestCase
         device_less_logs true
       ]).instance
       plugin.instance_variable_set(:@detector, StubDetector.new)
+      plugin.instance_variable_set(:@resource_type, "Fluentd")
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
       record = {"message" => "Hello from test",  
@@ -116,6 +119,7 @@ class FluentLMTest < Test::Unit::TestCase
         include_metadata false
       ]).instance
       plugin.instance_variable_set(:@detector, StubDetector.new)
+      plugin.instance_variable_set(:@resource_type, "Fluentd")
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
       record = {
