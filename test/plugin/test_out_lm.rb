@@ -3,6 +3,12 @@ require "fluent/test/helpers"
 require "fluent/test/driver/output"
 require "./lib/fluent/plugin/out_lm"
 
+class StubDetector
+  def infer_resource_type(record, tag)
+    "Fluentd"
+  end
+end
+
 class FluentLMTest < Test::Unit::TestCase
   include Fluent::Test::Helpers
 
@@ -25,6 +31,8 @@ class FluentLMTest < Test::Unit::TestCase
     test "_lm.resourceId sent in the record, should not use resource_mapping, and forward the same object " do
       plugin = create_driver(%[
       ]).instance
+      plugin.instance_variable_set(:@detector, StubDetector.new)
+      plugin.instance_variable_set(:@resource_type, "Fluentd")
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
       record = {"message" => "Hello from test", "_lm.resourceId" => { "lm_property": "lm_property_value"   }}
@@ -45,6 +53,8 @@ class FluentLMTest < Test::Unit::TestCase
         plugin = create_driver(%[
             resource_mapping {"a.b": "lm_property"} 
         ]).instance
+        plugin.instance_variable_set(:@detector, StubDetector.new)
+        plugin.instance_variable_set(:@resource_type, "Fluentd")
         tag = "lm.test"
         time = Time.parse("2020-08-23T00:53:15+00:00").to_i
         record = {"message" => "Hello from test", "a" => { "b" => "lm_property_value" } }
@@ -70,6 +80,8 @@ class FluentLMTest < Test::Unit::TestCase
           resource_mapping {"a.b": "lm_property"} 
           force_encoding ISO-8859-1
       ]).instance
+      plugin.instance_variable_set(:@detector, StubDetector.new)
+      plugin.instance_variable_set(:@resource_type, "Fluentd")
 
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
@@ -87,6 +99,8 @@ class FluentLMTest < Test::Unit::TestCase
       plugin = create_driver(%[
         resource_mapping {"a.b": "lm_property"} 
       ]).instance
+      plugin.instance_variable_set(:@detector, StubDetector.new)
+      plugin.instance_variable_set(:@resource_type, "Fluentd")
 
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
@@ -113,6 +127,8 @@ class FluentLMTest < Test::Unit::TestCase
         resource_mapping {"a.b": "lm_property"} 
         include_metadata true
       ]).instance
+      plugin.instance_variable_set(:@detector, StubDetector.new)
+      plugin.instance_variable_set(:@resource_type, "Fluentd")
 
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
@@ -136,6 +152,8 @@ class FluentLMTest < Test::Unit::TestCase
         resource_mapping {"a.b": "lm_property"} 
         include_metadata false
       ]).instance
+      plugin.instance_variable_set(:@detector, StubDetector.new)
+      plugin.instance_variable_set(:@resource_type, "Fluentd")
 
       tag = "lm.test"
       time = Time.parse("2020-08-23T00:53:15+00:00").to_i
