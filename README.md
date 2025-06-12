@@ -34,6 +34,34 @@ Create a custom `fluent.conf` or edit the existing one to specify which logs sho
     debug false
 </match>
 ```
+### Dynamic resource type
+
+If you want to use a dynamic resource type, you can leave the `resource_type` field empty. The plugin will then automatically assign the resource type based on either of below:
+* If user assigns source-specific tags as below:
+```
+Tag windows.server1.logs
+Tag linux.vm02.logs
+```
+* In the fluentd conf file:
+```
+<filter **>
+  @type record_transformer
+  enable_ruby true
+  <record>
+    resource_type ${record["resource_type"] || "Unknown"}
+  </record>
+</filter>
+```
+* If the remote agent includes a host field (many do), we can use heuristics:
+```
+
+host = record['host'] || record['hostname'] || ''
+return 'AWS/VirtualMachine' if host.start_with?('ip-')
+return 'GCP/VirtualMachine' if host.include?('.c.') || host.include?('gcp')
+return 'WindowsServer' if host.include?('win')
+return 'LinuxServer' if host.include?('linux')
+'Unknown'
+```
 
 ### Request example
 

@@ -17,7 +17,7 @@ class FluentLMTest < Test::Unit::TestCase
   end
 
   def create_driver(conf = CONFIG)
-    Fluent::Test::Driver::Output.new(Fluent::LmOutput).configure(conf)
+    Fluent::Test::Driver::Output.new(Fluent::Plugin::LmOutput).configure(conf)
   end
 
   def create_valid_subject
