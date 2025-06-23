@@ -124,13 +124,17 @@ module Fluent
       # NOTE! This method is called by internal thread, not Fluentd's main thread. So IO wait doesn't affect other plugins.
       def write(chunk)
         events = []
-          chunk.each do |(tag, time, record)|
+          chunk.msgpack_each do |(tag, time, record)|
           event = process_record(tag,time,record)
           if event != nil
             events.push(event)
           end
         end
         send_batch(events)
+      end
+
+      def formatted_to_msgpack_binary?
+        true
       end
 
       def process_record(tag, time, record)
