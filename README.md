@@ -69,7 +69,7 @@ See the [LogicMonitor Helm repository](https://github.com/logicmonitor/k8s-helm-
 | `resource_mapping` | The mapping that defines the source of the log event to the LM resource. In this case, the `<event_key>` in the incoming event is mapped to the value of `<lm_property>`.|
 | `access_id` | LM API Token access ID. |
 | `access_key` | LM API Token access key. |
-| `resource_type` | If a Resource Type is specified, it will be statically applied to all ingested logs. If left blank, Resource Type field will be empty. |
+| `resource_type` | If a Resource Type is explicitly specified, that value will be statically applied to all ingested logs. If set to `##predef.externalResourceType##`, the Resource Type will be assigned dynamically based on the log context or configuration. If left blank, the Resource Type field will remain unset in the ingested logs. |
 | `bearer_token` | LM API Bearer Token. Either specify `access_id` and `access_key` both or `bearer_token`. If all specified, LMv1 token(`access_id` and `access_key`) will be used for authentication with Logicmonitor. |
 | `flush_interval` | Defines the time in seconds to wait before sending batches of logs to LogicMonitor. Default is `60s`. |
 | `debug` | When `true`, logs more information to the fluentd console. |
