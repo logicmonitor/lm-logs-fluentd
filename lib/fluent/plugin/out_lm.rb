@@ -174,12 +174,7 @@ module Fluent
         end
         lm_event["message"] = encode_if_necessary(record["message"])
 
-        resource_type = @resource_type || @detector.infer_resource_type(record, tag)
-        if resource_type.nil? || resource_type.strip.empty? || resource_type == 'Unknown'
-          resource_type = @local_env_str
-        end
-
-        if is_blank(@resource_type) || @resource_type != "##predef.externalResourceType##"
+        if !is_blank(@resource_type)
           lm_event['_resource.type'] = resource_type
         end
 
