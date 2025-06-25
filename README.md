@@ -34,34 +34,6 @@ Create a custom `fluent.conf` or edit the existing one to specify which logs sho
     debug false
 </match>
 ```
-### Dynamic resource type
-
-If you want to use a dynamic resource type, you can leave the `resource_type` field empty. The plugin will then automatically assign the resource type based on either of below:
-* If user assigns source-specific tags as below:
-```
-Tag windows.server1.logs
-Tag linux.vm02.logs
-```
-* In the fluentd conf file:
-```
-<filter **>
-  @type record_transformer
-  enable_ruby true
-  <record>
-    resource_type ${record["resource_type"] || "Unknown"}
-  </record>
-</filter>
-```
-* If the remote agent includes a host field (many do), we can use heuristics:
-```
-
-host = record['host'] || record['hostname'] || ''
-return 'AWS/VirtualMachine' if host.start_with?('ip-')
-return 'GCP/VirtualMachine' if host.include?('.c.') || host.include?('gcp')
-return 'WindowsServer' if host.include?('win')
-return 'LinuxServer' if host.include?('linux')
-'Unknown'
-```
 
 ### Request example
 
@@ -97,8 +69,8 @@ See the [LogicMonitor Helm repository](https://github.com/logicmonitor/k8s-helm-
 | `resource_mapping` | The mapping that defines the source of the log event to the LM resource. In this case, the `<event_key>` in the incoming event is mapped to the value of `<lm_property>`.|
 | `access_id` | LM API Token access ID. |
 | `access_key` | LM API Token access key. |
-| `resource_type` | If a Resource Type is specified, it will be statically applied to all ingested logs. If left blank, a dynamic Resource Type will be assigned. |
-| `bearer_token` | LM API Bearer Token. Either specify `access_id` and `access_key` both or `bearer_token`. If all specified, LMv1 token(`access_id` and `access_key`) will be used for authentication with Logicmonitor.   |
+| `resource_type` | If a Resource Type is explicitly specified, that value will be statically applied to all ingested logs. If set to `##predef.externalResourceType##`, the Resource Type will be assigned dynamically based on the log context or configuration. If left blank, the Resource Type field will remain unset in the ingested logs. |
+| `bearer_token` | LM API Bearer Token. Either specify `access_id` and `access_key` both or `bearer_token`. If all specified, LMv1 token(`access_id` and `access_key`) will be used for authentication with Logicmonitor. |
 | `flush_interval` | Defines the time in seconds to wait before sending batches of logs to LogicMonitor. Default is `60s`. |
 | `debug` | When `true`, logs more information to the fluentd console. |
 | `force_encoding` | Specify charset when logs contains invalid utf-8 characters. |
