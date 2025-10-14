@@ -1,0 +1,65 @@
+# ===== Builder: compile gems with toolchain =====
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal AS builder
+
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+    GEM_HOME=/opt/fluent/gems \
+    GEM_PATH=/opt/fluent/gems \
+    PATH=/opt/fluent/bin:/usr/local/bin:/usr/bin
+
+# Keep lean: no docs, no weak deps
+RUN printf 'tsflags=nodocs\ninstall_weak_deps=false\n' >> /etc/dnf/dnf.conf && \
+    dnf -y update && \
+    dnf -y install \
+      ruby ruby3.2-rubygems ruby3.2-rubygem-json \
+      ruby-devel \
+      gcc make \
+      systemd-libs systemd-devel \
+      pkgconf-pkg-config \
+      tar gzip findutils which ca-certificates && \
+    mkdir -p /opt/fluent/bin /opt/fluent/gems
+
+# Fluentd 1.19 + compatible plugins
+RUN gem install --no-document --install-dir "$GEM_HOME" --bindir /opt/fluent/bin \
+      fluentd:1.19.0 \
+      fluent-plugin-kubernetes_metadata_filter:3.8.0 \
+      fluent-plugin-systemd:1.1.1 \
+      fluent-plugin-concat:2.5.0 \
+      fluent-plugin-lm-logs:1.2.8 \
+      fluent-plugin-multi-format-parser:1.0.0 && \
+    rm -rf "$GEM_HOME"/cache/*
+
+# Small trim of static libs/headers if any slipped in
+RUN find "$GEM_HOME" -type f -name '*.a' -delete && \
+    find "$GEM_HOME" -type d -name 'include' -prune -exec rm -rf {} +
+
+# ===== Runtime: only what we need to run =====
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal
+
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+    GEM_HOME=/opt/fluent/gems \
+    GEM_PATH=/opt/fluent/gems \
+    PATH=/opt/fluent/bin:/usr/local/bin:/usr/bin \
+    FLUENTD_CONF=/fluentd/etc/fluent.conf
+
+RUN printf 'tsflags=nodocs\ninstall_weak_deps=false\n' >> /etc/dnf/dnf.conf && \
+    dnf -y update && \
+    ( dnf -y install \
+        ruby ruby3.2-rubygems ruby3.2-rubygem-json \
+        systemd-libs which ca-certificates \
+      || dnf -y install \
+        ruby rubygems rubygem-json \
+        systemd-libs which ca-certificates ) && \
+    dnf clean all && rm -rf /var/cache/dnf
+
+# Bring in compiled gems + fluentd wrappers
+COPY --from=builder /opt/fluent /opt/fluent
+
+# Make sure fluentd is resolvable via PATH
+RUN ln -sf /opt/fluent/bin/fluentd /usr/local/bin/fluentd && \
+    ln -sf /opt/fluent/bin/fluent-gem /usr/local/bin/fluent-gem && \
+    mkdir -p /fluentd/etc /fluentd/log
+
+WORKDIR /fluentd
+
+# Your chart mounts /fluentd/etc, and you already mount /var/log, /var/lib/docker/containers, /run/log/journal
+CMD ["/bin/sh","-lc","exec /opt/fluent/bin/fluentd -c ${FLUENTD_CONF} --under-supervisor"]
