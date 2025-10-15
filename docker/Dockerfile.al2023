@@ -6,16 +6,14 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 \
     GEM_PATH=/opt/fluent/gems \
     PATH=/opt/fluent/bin:/usr/local/bin:/usr/bin
 
-# Keep lean: no docs, no weak deps
+# Lean RPMs; no 'dnf update' (reproducible & smaller)
 RUN printf 'tsflags=nodocs\ninstall_weak_deps=false\n' >> /etc/dnf/dnf.conf && \
-    dnf -y update && \
     dnf -y install \
-      ruby ruby3.2-rubygems ruby3.2-rubygem-json \
-      ruby-devel \
-      gcc make \
+      ruby ruby3.2-rubygems \
+      ruby-devel gcc make binutils \
       systemd-libs systemd-devel \
       pkgconf-pkg-config \
-      tar gzip findutils which ca-certificates && \
+      tar gzip findutils ca-certificates && \
     mkdir -p /opt/fluent/bin /opt/fluent/gems
 
 # Fluentd 1.19 + compatible plugins
@@ -28,9 +26,11 @@ RUN gem install --no-document --install-dir "$GEM_HOME" --bindir /opt/fluent/bin
       fluent-plugin-multi-format-parser:1.0.0 && \
     rm -rf "$GEM_HOME"/cache/*
 
-# Small trim of static libs/headers if any slipped in
-RUN find "$GEM_HOME" -type f -name '*.a' -delete && \
-    find "$GEM_HOME" -type d -name 'include' -prune -exec rm -rf {} +
+# Strip native .so + trim headers/archives to save space
+RUN find "$GEM_HOME" -type f -name '*.so' -exec strip --strip-unneeded {} + || true && \
+    find "$GEM_HOME" -type f -name '*.a' -delete && \
+    find "$GEM_HOME" -type d -name 'include' -prune -exec rm -rf {} + && \
+    dnf clean all && rm -rf /var/cache/dnf
 
 # ===== Runtime: only what we need to run =====
 FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal
@@ -41,25 +41,28 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 \
     PATH=/opt/fluent/bin:/usr/local/bin:/usr/bin \
     FLUENTD_CONF=/fluentd/etc/fluent.conf
 
+# Runtime deps: Ruby + RubyGems + systemd-libs + certs
 RUN printf 'tsflags=nodocs\ninstall_weak_deps=false\n' >> /etc/dnf/dnf.conf && \
-    dnf -y update && \
     ( dnf -y install \
-        ruby ruby3.2-rubygems ruby3.2-rubygem-json \
-        systemd-libs which ca-certificates \
+        ruby ruby3.2-rubygems \
+        systemd-libs ca-certificates \
       || dnf -y install \
-        ruby rubygems rubygem-json \
-        systemd-libs which ca-certificates ) && \
+        ruby rubygems \
+        systemd-libs ca-certificates ) && \
     dnf clean all && rm -rf /var/cache/dnf
 
 # Bring in compiled gems + fluentd wrappers
 COPY --from=builder /opt/fluent /opt/fluent
 
-# Make sure fluentd is resolvable via PATH
+# Make fluentd visible, prep config dirs, drop to non-root (uid/gid 999)
 RUN ln -sf /opt/fluent/bin/fluentd /usr/local/bin/fluentd && \
     ln -sf /opt/fluent/bin/fluent-gem /usr/local/bin/fluent-gem && \
-    mkdir -p /fluentd/etc /fluentd/log
+    mkdir -p /fluentd/etc /fluentd/log && \
+    chown -R 999:999 /fluentd /opt/fluent && \
+    chmod -R a+rX /opt/fluent
 
+USER 999:999
 WORKDIR /fluentd
 
-# Your chart mounts /fluentd/etc, and you already mount /var/log, /var/lib/docker/containers, /run/log/journal
-CMD ["/bin/sh","-lc","exec /opt/fluent/bin/fluentd -c ${FLUENTD_CONF} --under-supervisor"]
+# Your chart mounts /fluentd/etc (ConfigMap) and host log paths (containers/journal)
+CMD ["/opt/fluent/bin/fluentd","-c","/fluentd/etc/fluent.conf","--under-supervisor"]
