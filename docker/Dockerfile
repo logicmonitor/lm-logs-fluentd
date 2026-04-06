@@ -11,6 +11,7 @@ RUN apt-get update && \
     gem install fluent-plugin-systemd -v 1.1.1 && \
     gem install fluent-plugin-lm-logs -v 1.2.8 && \
     gem install fluent-plugin-multi-format-parser -v 1.0.0 && \
+    gem install fluent-plugin-parser-cri -v 0.1.1 && \
     apt-get purge -y \
       build-essential \
       libsystemd-dev \
